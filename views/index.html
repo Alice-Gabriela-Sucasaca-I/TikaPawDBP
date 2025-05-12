@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikaPaw</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-marca">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <img src="/img/Cats Grooming.png" alt="Logo">
+                TikaPaw
+            </a>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/refugios">Refugios</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </nav>
+        <div class="iconos">
+            <a href="/usuarios/login" title="Iniciar sesión">
+                <i class="fa-regular fa-user"></i>
+            </a>
+            <a href="/busqueda" title="Buscar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+            <a href="/favoritos" title="Favoritos">
+                <i class="fa-regular fa-heart"></i>
+            </a>
+        </div>
+    </header>
+    <section class="seccion-heroica">
+        <div class="izquierda-heroica">
+            <img src="/img/logo.png" alt="Gato central">
+        </div>
+        <div class="derecha-heroica">
+            <div class="texto-heroico">
+                Cada patita tiene una historia esperando ser escrita. Dale una segunda oportunidad al amor, conoce a tu futura mascota.<br>
+                La felicidad comienza con un ladrido, un ronroneo… ¿Estás listo para recibirla?
+            </div>
+            <div class="breadcrumb">Home</div>
+            <div class="botones">
+                <button class="boton-heroico">Más información</button>
+                <button class="boton-heroico" onclick="window.location.href='/refugios'">Adopta ahora</button>
+            </div>
+        </div>
+    </section>
+    <section class="seccion-informativa">
+        <h2>Descubre los mejores centros de adopción y refugios de mascotas, donde cada vida espera una oportunidad</h2>
+        <div class="barras-busqueda">
+            <div class="barra-busqueda">
+                <i class="fa-solid fa-bars"></i>
+                <input type="text" placeholder="Busca un refugio, albergue...">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="barra-busqueda">
+                <i class="fa-solid fa-bars"></i>
+                <input type="text" placeholder="Adopta una mascota">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </div>
+    </section>
+    <section class="beneficios">
+        <h2>¿Por qué adoptar en TikaPaw?</h2>
+        <div class="contenedor-beneficios">
+            <div class="beneficio">
+                <i class="fa-solid fa-paw"></i>
+                <h3>Amor Incondicional</h3>
+                <p>Encuentra un compañero fiel que llenará tu vida de alegría.</p>
+            </div>
+            <div class="beneficio">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                <h3>Apoya a Refugios</h3>
+                <p>Cada adopción contribuye a rescatar más animales necesitados.</p>
+            </div>
+            <div class="beneficio">
+                <i class="fa-solid fa-house"></i>
+                <h3>Un hogar para siempre</h3>
+                <p>Brindas una segunda oportunidad a un ser lleno de amor.</p>
+            </div>
+        </div>
+    </section>
+    <section class="galeria-gatos">
+        <h2>Gatitos en adopción</h2>
+        <div class="contenedor-gatos">
+            <div class="tarjeta-gato">
+                <img src="/img/cat.jpeg" alt="Gato 1">
+                <h3>Michi</h3>
+                <p>2 años • Juguetón y cariñoso</p>
+                <button class="boton-adoptar">Adóptame</button>
+            </div>
+            <div class="tarjeta-gato">
+                <img src="/img/cat.jpeg" alt="Gato 2">
+                <h3>Luna</h3>
+                <p>1 año • Tranquila y dulce</p>
+                <button class="boton-adoptar">Adóptame</button>
+            </div>
+            <div class="tarjeta-gato">
+                <img src="/img/cat.jpeg" alt="Gato 3">
+                <h3>Tigre</h3>
+                <p>3 años • Independiente</p>
+                <button class="boton-adoptar">Adóptame</button>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="boton-adoptar" onclick="window.location.href='/refugios'">Ver más gatos</button>
+        </div>
+    </section>
+    <footer>
+        <div class="footer-links">
+            <a href="/about">About</a> 
+            <a href="/contact">Contact</a> |
+            <a href="/privacy.html">Privacy</a> |
+            <a href="/terms.html">Terms</a>
+        </div>
+        © 2025 TikaPaw - Todos los derechos reservados
+    </footer>
+    <script src="/js/main.js" defer></script>
+</body>
+</html>

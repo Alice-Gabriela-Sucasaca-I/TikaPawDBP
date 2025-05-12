@@ -1,0 +1,35 @@
+/* ================================
+    Responsive.css - Media Queries
+=================================== */
+
+/* responsive.css */@media (max-width: 768px) {
+    .seccion-heroica {
+        flex-direction: column;
+        height: auto;
+        padding: 30px;
+    }
+
+    .izquierda-heroica, .derecha-heroica {
+        flex: 100%;
+        max-width: 100%;
+    }
+
+    .derecha-heroica {
+        margin-top: 30px;
+    }
+
+    .texto-heroico {
+        font-size: 14px; /* Ajustado para mantener proporción en móviles */
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor-gatos, .contenedor-beneficios {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .barra-busqueda input {
+        width: 100%;
+    }
+}
