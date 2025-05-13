@@ -4,8 +4,8 @@ const bodyParser = require('body-parser'); // datos
 const path = require('path');
 const db = require('./config/database');
 const indexRoutes = require('./routes/index');
-const usuariosRoutes = require('./routes/usuarios');
-const refugiosRoutes = require('./routes/refugios');
+const usuariosRoutes = require('./routes/usuarios');//n
+const refugiosRoutes = require('./routes/refugios');//n
 
 const app = express();
 const port = 3000;
@@ -17,8 +17,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // rutas
 app.use('/', indexRoutes);
-app.use('/usuarios', usuariosRoutes);
-app.use('/refugios', refugiosRoutes);
+app.use('/usuarios', usuariosRoutes); //n
+app.use('/refugios', refugiosRoutes); //n
 
 // iniciar servidor
 app.listen(port, () => {

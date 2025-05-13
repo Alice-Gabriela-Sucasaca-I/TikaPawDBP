@@ -3,8 +3,6 @@ const router = express.Router();
 const path = require('path');
 const db = require('../config/database');
 
-let ultimo_id_mascota = 0;
-
 // mostrar index
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'index.html'));
@@ -36,20 +34,19 @@ router.get('/mascotas/registermascota', (req, res) => {
 });
 
 // procesar registro de mascota
+
 router.post('/mascotas/registermascota', (req, res) => {
-    const { nombre, tamanio, especie, edad, genero, descripcion } = req.body;
+    const { idcentro, nombre, tamanio, especie, edad, genero, descripcion } = req.body;
 
-    ultimo_id_mascota += 1;
-    const idmascota = ultimo_id_mascota;
-
-    const sql = 'INSERT INTO mascota (idmascota, nombre, tamanio, especie, edad, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [idmascota, nombre, tamanio, especie, edad, genero, descripcion], (err, result) => {
+    const sql = 'INSERT INTO mascota (idcentro, nombre, tamanio, especie, edad, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(sql, [idcentro, nombre, tamanio, especie, edad, genero, descripcion], (err, result) => {
         if (err) {
             console.error('error al registrar mascota:', err);
             res.json({ success: false, message: 'error al registrar mascota' });
             return;
         }
-        res.json({ success: true, message: 'mascota registrada exitosamente' });
+        const newId = result.insertId; // ID generado por MySQL
+        res.json({ success: true, message: 'mascota registrada exitosamente', idmascota: newId });
     });
 });
 

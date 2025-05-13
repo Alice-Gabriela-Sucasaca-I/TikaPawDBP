@@ -26,8 +26,8 @@ header {
 
 nav {
     display: flex;
-    gap: 30px; /* Aumentado de un valor probablemente menor para más espaciado */
-    margin-right: 40px; /* Añadido para dar más espacio al borde derecho */
+    gap: 30px; 
+    margin-right: 40px; 
 }
 
 nav a {
@@ -39,7 +39,7 @@ nav a {
 }
 
 nav a:hover {
-    color: #ff6f61; /* Color coral para el hover */
+    color: #ff6f61; 
 }
 
 .iconos {

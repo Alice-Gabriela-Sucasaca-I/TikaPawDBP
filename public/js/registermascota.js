@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Cargar refugios en el select
+    // Cargar refugios en el select uu
     const selectRefugio = document.getElementById('idcentro');
     fetch('/refugios/refugios')
         .then(response => response.json())
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectRefugio.innerHTML = '<option value="">Error al cargar refugios</option>';
         });
 
-    // Manejar el envío del formulario
+    // Manejar el envio del formulario
     const form = document.getElementById('register-mascota-form');
     if (form) {
         form.addEventListener('submit', handleSubmit);
@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function handleSubmit(event) {
-    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+    event.preventDefault(); 
 
-    // Capturar los datos del formulario
+    // Captura datos del formulario
     const formData = new FormData(event.target);
     const data = {
         idcentro: parseInt(formData.get('idcentro')),
@@ -42,7 +42,7 @@ function handleSubmit(event) {
         descripcion: formData.get('descripcion')
     };
 
-    // Enviar los datos al servidor
+    // Enviar datos al servidor
     fetch('/mascotas/registermascota', {
         method: 'POST',
         headers: {
@@ -53,16 +53,17 @@ function handleSubmit(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            // Mostrar mensaje de éxito
+            // Mostrar mensaje de exito
             const exito = document.getElementById('exito');
             exito.style.display = 'block';
             // Limpiar el formulario
             event.target.reset();
-            // Ocultar el mensaje después de 5 segundos
+            // Ocultar el mensaje despues de 5 segundos
             setTimeout(() => {
                 exito.style.display = 'none';
             }, 5000);
-        } else {
+        } 
+        else {
             console.error('Error al registrar mascota:', result.message);
             alert('Error al registrar mascota: ' + result.message);
         }

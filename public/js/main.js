@@ -21,10 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             contenedorGatos.appendChild(tarjeta);
                         });
-                    } else {
+                    }
+                     else {
                         contenedorGatos.innerHTML = '<p>no hay mascotas disponibles para adopcion en este momento :c.</p>';
                     }
-                } else {
+                }
+                 else {
                     console.error('error al cargar mascotas:', datos.message);
                 }
             })
@@ -55,10 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             `;
                             contenedorGatos.appendChild(tarjeta);
                         });
-                    } else {
+                    } 
+                    else {
                         contenedorGatos.innerHTML = '<p>no hay refugios disponibles en este momento.</p>';
                     }
-                } else {
+                } 
+                else {
                     console.error('error al cargar refugios:', datos.message);
                 }
             })
@@ -103,15 +107,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `;
                                 contenedorGatos.appendChild(tarjeta);
                             });
-                        } else {
+                        }
+                         else {
                             contenedorGatos.innerHTML = '<p>No hay mascotas disponibles en este refugio.</p>';
                         }
-                    } else {
+                    }
+                     else {
                         console.error('error al cargar mascotas:', datos.message);
                     }
                 })
                 .catch(error => console.error('error:', error));
-        } else {
+        }
+         else {
             const contenedorGatos = document.querySelector('.contenedor-gatos');
             contenedorGatos.innerHTML = '<p>Error: No se seleccionó un refugio.</p>';
         }

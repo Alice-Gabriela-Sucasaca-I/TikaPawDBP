@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function handleSubmit(event) {
-    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+    event.preventDefault(); 
 
     // Capturar los datos del formulario
     const formData = new FormData(event.target);
@@ -17,7 +17,7 @@ function handleSubmit(event) {
         telefono: formData.get('telefono'),
         correo: formData.get('correo'),
         redesociales: formData.get('redes'),
-        contrasena: formData.get('contrasena'), // Nuevo campo
+        contrasena: formData.get('contrasena'), 
         descripcion: formData.get('descripcion'),
         infoadicional: formData.get('infoadicional')
     };
@@ -33,10 +33,10 @@ function handleSubmit(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            // Mostrar mensaje de éxito
+            // Mostrar mensaje de exito
             const exito = document.getElementById('exito');
             exito.style.display = 'block';
-            // Opcional: Limpiar el formulario
+            // Limpiar el formulario
             event.target.reset();
             // Ocultar el mensaje después de 5 segundos
             setTimeout(() => {
