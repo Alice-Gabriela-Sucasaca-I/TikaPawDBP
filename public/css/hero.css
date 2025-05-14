@@ -332,3 +332,10 @@
         transform: translateY(0);
     }
 }
+#resultados-informativa {
+  margin-top: 20px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  min-height: 0;
+}

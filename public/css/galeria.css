@@ -68,3 +68,19 @@
 .boton-adoptar:hover {
     background-color: #d96a46;
 }
+
+/* Estilos para el contenedor de resultados en la sección informativa */
+#resultados-informativa {
+    background-color: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Asegurar que el contenedor-gatos dentro de resultados-informativa se vea bien */
+#resultados-informativa .contenedor-gatos {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}

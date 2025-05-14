@@ -9,31 +9,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="logo-marca">
-            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                <img src="/img/Cats Grooming.png" alt="Logo">
-                TikaPaw
-            </a>
-        </div>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/refugios">Refugios</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-        </nav>
-        <div class="iconos">
-            <a href="/usuarios/login" title="Iniciar sesión">
-                <i class="fa-regular fa-user"></i>
-            </a>
-            <a href="/busqueda" title="Buscar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </a>
-            <a href="/favoritos" title="Favoritos">
-                <i class="fa-regular fa-heart"></i>
-            </a>
-        </div>
-    </header>
+<header>
+  <div class="logo-marca">
+    <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+      <img src="/img/Cats Grooming.png" alt="Logo">
+      TikaPaw
+    </a>
+  </div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/refugios">Refugios</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+  </nav>
+  <div class="iconos">
+    <a href="/usuarios/login" title="Iniciar sesión">
+      <i class="fa-regular fa-user"></i>
+    </a>
+    <div class="buscador">
+      <input type="text" id="buscar-refugio" placeholder="Busca un refugio, albergue..." class="busqueda-input">
+      <i class="fa-solid fa-magnifying-glass" onclick="buscarRefugio()"></i>
+    </div>
+    <div class="buscador">
+      <input type="text" id="buscar-mascota" placeholder="Adopta una mascota..." class="busqueda-input">
+      <i class="fa-solid fa-magnifying-glass" onclick="buscarMascota()"></i>
+    </div>
+    <a href="/favoritos" title="Favoritos">
+      <i class="fa-regular fa-heart"></i>
+    </a>
+  </div>
+</header>
     <section class="seccion-heroica">
         <div class="izquierda-heroica">
             <img src="/img/logo.png" alt="Gato central">
@@ -50,21 +55,24 @@
             </div>
         </div>
     </section>
-    <section class="seccion-informativa">
-        <h2>Descubre los mejores centros de adopción y refugios de mascotas, donde cada vida espera una oportunidad</h2>
-        <div class="barras-busqueda">
-            <div class="barra-busqueda">
-                <i class="fa-solid fa-bars"></i>
-                <input type="text" placeholder="Busca un refugio, albergue...">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-            <div class="barra-busqueda">
-                <i class="fa-solid fa-bars"></i>
-                <input type="text" placeholder="Adopta una mascota">
-                <i class="fa-solid fa-magnifying-glass"></i>
+<section class="seccion-informativa">
+    <h2>Descubre los mejores centros de adopción y refugios de mascotas, donde cada vida espera una oportunidad</h2>
+    <div class="barras-busqueda">
+        <div class="barra-busqueda">
+            <i class="fa-solid fa-bars"></i>
+            <div class="buscador">
+                <input type="text" id="buscar-refugio-informativa" placeholder="Busca un refugio, albergue..." class="busqueda-input">
+                <i class="fa-solid fa-magnifying-glass" onclick="buscarRefugioInformativa()"></i>
             </div>
         </div>
-    </section>
+        <div class="barra-busqueda">
+            <i class="fa-solid fa-bars"></i>
+            <input type="text" id="buscar-mascota-informativa" placeholder="Adopta una mascota">
+            <i class="fa-solid fa-magnifying-glass" onclick="buscarMascotaInformativa()"></i>
+        </div>
+    </div>
+    <div id="resultados-informativa"></div>
+</section>
     <section class="beneficios">
         <h2>¿Por qué adoptar en TikaPaw?</h2>
         <div class="contenedor-beneficios">
@@ -123,3 +131,4 @@
     <script src="/js/main.js" defer></script>
 </body>
 </html>
+<script src="/js/busqueda.js" defer></script>

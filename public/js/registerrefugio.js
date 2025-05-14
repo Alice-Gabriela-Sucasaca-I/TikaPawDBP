@@ -38,7 +38,7 @@ function handleSubmit(event) {
             exito.style.display = 'block';
             // Limpiar el formulario
             event.target.reset();
-            // Ocultar el mensaje después de 5 segundos
+            
             setTimeout(() => {
                 exito.style.display = 'none';
             }, 5000);

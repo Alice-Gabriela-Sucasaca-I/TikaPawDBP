@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikaPaw</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo-marca">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+                <img src="/img/Cats Grooming.png" alt="Logo">
+                TikaPaw
+            </a>
+        </div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/refugios">Refugios</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </nav>
+        <div class="iconos">
+            <a href="/usuarios/login" title="Iniciar sesión">
+                <i class="fa-regular fa-user"></i>
+            </a>
+            <a href="/busqueda" title="Buscar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+            <a href="/favoritos" title="Favoritos">
+                <i class="fa-regular fa-heart"></i>
+            </a>
+        </div>
+    </header>
+</head>
+
+<body>
+    <h1>Perfil de Usuario</h1>
+    <div id="perfil">
+        <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+        <p><strong>Edad:</strong> <span id="edad"></span></p>
+        <p><strong>Correo:</strong> <span id="correo"></span></p>
+        <p><strong>Teléfono:</strong> <span id="telefono"></span></p>
+    </div>
+    <button id="logout">Cerrar sesión</button>
+
+    <script>
+        async function cargarPerfil() {
+            try {
+                const response = await fetch('/usuarios/perfil/usuario/datos', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('nombre').textContent = data.data.nombre;
+                    document.getElementById('edad').textContent = data.data.edad;
+                    document.getElementById('correo').textContent = data.data.correo;
+                    document.getElementById('telefono').textContent = data.data.telefono;
+                } else {
+                    alert('Error al obtener datos del perfil');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('logout').addEventListener('click', async () => {
+            const response = await fetch('/usuarios/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = '/usuarios/login';
+            } else {
+                alert('Error al cerrar sesión');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', cargarPerfil);
+    </script>
+</body>
+</html>
