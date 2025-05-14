@@ -27,7 +27,8 @@ const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'aliceg',
-    database: process.env.DB_DATABASE || 'dbtikapaw'
+    database: process.env.DB_DATABASE || 'dbtikapaw',
+    port: process.env.DB_PORT || 32803
 });
 
 db.connect((err) => {
