@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-//const db = require('../config/database');
 const { db } = require('../config/database');
-
 const path = require('path');
-const bcrypt = require('bcrypt'); 
+const bcrypt = require('bcrypt');
 
 router.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'register.html'));
@@ -37,6 +35,7 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
     if (req.session.userId) {
+        console.log('Sesión ya activa:', req.session);
         return res.json({ success: true, tipo: req.session.tipo });
     }
 
@@ -56,6 +55,7 @@ router.post('/login', async (req, res) => {
             if (match) {
                 req.session.userId = usuario.idusuario;
                 req.session.tipo = 'usuario';
+                console.log('Login exitoso (usuario):', req.session);
                 return res.json({ success: true, tipo: 'usuario' });
             }
         }
@@ -74,6 +74,7 @@ router.post('/login', async (req, res) => {
                 if (match) {
                     req.session.userId = refugio.idcentro;
                     req.session.tipo = 'refugio';
+                    console.log('Login exitoso (refugio):', req.session);
                     return res.json({ success: true, tipo: 'refugio' });
                 }
             }
@@ -86,6 +87,7 @@ router.post('/login', async (req, res) => {
 router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
+            console.error('Error al cerrar sesión:', err);
             return res.json({ success: false, message: 'Error al cerrar sesión' });
         }
         res.clearCookie('connect.sid');
@@ -94,26 +96,53 @@ router.post('/logout', (req, res) => {
 });
 
 router.get('/api/auth/check', (req, res) => {
+    console.log('Verificando sesión:', req.session);
     if (!req.session.userId || !req.session.tipo) {
+        console.log('Sesión no válida:', req.session);
         return res.json({ isValid: false });
     }
 
-    const sql = 'SELECT idusuario, nombre, edad, correo, telefono FROM usuario WHERE idusuario = ?';
-    db.query(sql, [req.session.userId], (err, results) => {
-        if (err || results.length === 0) {
-            return res.json({ isValid: false });
-        }
-        const user = results[0];
-        res.json({
-            isValid: true,
-            tipo: req.session.tipo,
-            userId: user.idusuario,
-            username: user.nombre,
-            edad: user.edad,
-            correo: user.correo,
-            telefono: user.telefono
+    if (req.session.tipo === 'usuario') {
+        const sql = 'SELECT idusuario, nombre, edad, correo, telefono FROM usuario WHERE idusuario = ?';
+        db.query(sql, [req.session.userId], (err, results) => {
+            if (err || results.length === 0) {
+                console.error('Error al verificar usuario:', err || 'Usuario no encontrado');
+                return res.json({ isValid: false });
+            }
+            const user = results[0];
+            res.json({
+                isValid: true,
+                tipo: req.session.tipo,
+                userId: user.idusuario,
+                username: user.nombre,
+                edad: user.edad,
+                correo: user.correo,
+                telefono: user.telefono
+            });
         });
-    });
+    } else if (req.session.tipo === 'refugio') {
+        const sql = 'SELECT idcentro, nombrecentro, nombreencargado, correo, telefono, redesociales FROM centrosdeadopcion WHERE idcentro = ?';
+        db.query(sql, [req.session.userId], (err, results) => {
+            if (err || results.length === 0) {
+                console.error('Error al verificar refugio:', err || 'Refugio no encontrado');
+                return res.json({ isValid: false });
+            }
+            const refugio = results[0];
+            res.json({
+                isValid: true,
+                tipo: req.session.tipo,
+                userId: refugio.idcentro,
+                username: refugio.nombrecentro,
+                nombreencargado: refugio.nombreencargado,
+                correo: refugio.correo,
+                telefono: refugio.telefono,
+                redesociales: refugio.redesociales
+            });
+        });
+    } else {
+        console.log('Tipo de sesión desconocido:', req.session.tipo);
+        res.json({ isValid: false });
+    }
 });
 
 router.get('/perfil/usuario', (req, res) => {
@@ -143,42 +172,36 @@ router.get('/perfil/usuario/datos', (req, res) => {
         res.json({ success: true, data: results[0] });
     });
 });
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-router.get('/login/rdf', (req, res) => {
-  const baseURL = `${req.protocol}://${req.get('host')}`;
 
-  const rdf = `<?xml version="1.0"?>
+router.get('/login/rdf', (req, res) => {
+    const baseURL = `${req.protocol}://${req.get('host')}`;
+    const rdf = `<?xml version="1.0"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:tiki="${baseURL}/rdf#">
-
   <rdf:Description rdf:about="${baseURL}/usuarios/login">
     <tiki:descripcion>Accede a tu cuenta o regístrate.</tiki:descripcion>
     <tiki:enlaceRegistrar rdf:resource="${baseURL}/usuarios/register"/>
     <tiki:yaTengoCuenta rdf:resource="${baseURL}/usuarios/login"/>
   </rdf:Description>
-
 </rdf:RDF>`;
 
-  res.type('application/rdf+xml');
-  res.send(rdf);
+    res.type('application/rdf+xml');
+    res.send(rdf);
 });
 
 router.get('/register/rdf', (req, res) => {
-  const baseURL = `${req.protocol}://${req.get('host')}`;
-
-  const rdf = `<?xml version="1.0"?>
+    const baseURL = `${req.protocol}://${req.get('host')}`;
+    const rdf = `<?xml version="1.0"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:tiki="${baseURL}/rdf#">
-
   <rdf:Description rdf:about="${baseURL}/usuarios/register">
     <tiki:descripcion>Formulario para crear una cuenta de usuario.</tiki:descripcion>
     <tiki:yaTengoCuenta rdf:resource="${baseURL}/usuarios/login"/>
   </rdf:Description>
-
 </rdf:RDF>`;
 
-  res.type('application/rdf+xml');
-  res.send(rdf);
+    res.type('application/rdf+xml');
+    res.send(rdf);
 });
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module.exports = router;
