@@ -97,7 +97,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 */
 
-const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
+const BASE_URL = window.location.hostname.includes('localhost')
+  ? 'http://localhost:3000'
+  : 'https://tikapawdbp.onrender.com';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Verifica inicio de sesión
