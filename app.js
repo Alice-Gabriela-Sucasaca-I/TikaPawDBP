@@ -44,11 +44,10 @@ app.listen(port, () => {
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const db = require('./config/database');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const db = require('./config/database'); // Asegúrate que ./config/database exporta { sequelize }
 
-// Rutas
 const indexRoutes = require('./routes/index');
 const usuariosRoutes = require('./routes/usuarios');
 const refugiosRoutes = require('./routes/refugios');
@@ -58,38 +57,41 @@ const solicitudesRoutes = require('./routes/solicitudes');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const sequelize = db.sequelize;
-const sessionStore = new SequelizeStore({
-    db: sequelize,
-    tableName: 'sessions',
-    checkExpirationInterval: 15 * 60 * 1000, // Limpia sesiones expiradas cada 15 minutos
-    expiration: 24 * 60 * 60 * 1000 // Sesiones expiran después de 24 horas
-});
-
+// CORS configurado para frontend hospedado (ajusta si tu dominio cambia)
 app.use(cors({
-    origin: 'https://tikapawdbp.onrender.com',
+    origin: 'https://tikapawdbp.onrender.com', // O 'http://localhost:5173' en desarrollo
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Middlewares
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'views')));
+
+// Sesiones persistentes
+const sequelize = db.sequelize;
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+    tableName: 'sessions',
+    checkExpirationInterval: 15 * 60 * 1000, // Cada 15 minutos limpia sesiones vencidas
+    expiration: 24 * 60 * 60 * 1000           // Sesiones expiran en 24h
+});
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'mi-secreto',
+    secret: process.env.SESSION_SECRET || 'mi-secreto', // Mejor usar variables de entorno
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production', // Solo true en HTTPS
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
         sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
         path: '/'
     }
 }));
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'views')));
 
 // Rutas
 app.use('/', indexRoutes);
@@ -98,11 +100,12 @@ app.use('/refugios', refugiosRoutes);
 app.use('/mascotas', mascotasRoutes);
 app.use('/solicitudes', solicitudesRoutes);
 
+// Inicio del servidor
 (async () => {
     try {
         await sequelize.authenticate();
         console.log('Conexión a la base de datos verificada');
-        await sessionStore.sync({ force: false }); // Sincroniza la tabla sessions sin borrarla
+        await sessionStore.sync(); // Asegura que la tabla 'sessions' exista
         console.log('Tabla de sesiones sincronizada');
 
         app.listen(port, () => {
