@@ -1,17 +1,22 @@
+const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
+
 document.addEventListener('DOMContentLoaded', () => {
     const mensajeError = document.getElementById('mensaje-error');
     const resultadosSolicitudes = document.getElementById('resultados-solicitudes');
     let idcentro;
 
-    //fetch('http://localhost:3000/usuarios/api/auth/check', { credentials: 'include' })
-    fetch('https://tikapawdbp.onrender.com/usuarios/api/auth/check', { credentials: 'include' })  
-    .then(res => res.json())
+    fetch(`${BASE_URL}/usuarios/api/auth/check`, { credentials: 'include' })
+        .then(res => res.json())
         .then(data => {
             if (!data.isValid || data.tipo !== 'refugio') {
-                window.location.href = '/usuarios/login';
+                window.location.href = `${BASE_URL}/usuarios/login`;
             } else {
                 idcentro = data.userId;
-                cargarPerfil();
+                document.getElementById('nombrecentro').textContent = data.username || 'Refugio';
+                document.getElementById('nombreencargado').textContent = data.nombreencargado || 'No especificado';
+                document.getElementById('correo').textContent = data.correo || 'No especificado';
+                document.getElementById('telefono').textContent = data.telefono || 'No especificado';
+                document.getElementById('redesociales').textContent = data.redesociales || 'No especificado';
                 cargarMascotas(idcentro);
                 cargarSolicitudes();
             }
@@ -20,32 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error al verificar autenticación:', error);
             mensajeError.textContent = 'Error al verificar autenticación.';
             mensajeError.classList.remove('oculto');
+            window.location.href = `${BASE_URL}/usuarios/login`;
         });
 
-    function cargarPerfil() {
-        fetch('http://localhost:3000/refugios/api/perfil', { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('nombrecentro').textContent = data.refugio.nombrecentro;
-                    document.getElementById('nombreencargado').textContent = data.refugio.nombreencargado;
-                    document.getElementById('correo').textContent = data.refugio.correo;
-                    document.getElementById('telefono').textContent = data.refugio.telefono;
-                    document.getElementById('redesociales').textContent = data.refugio.redesociales || 'No especificado';
-                } else {
-                    mensajeError.textContent = data.message || 'Error al cargar el perfil.';
-                    mensajeError.classList.remove('oculto');
-                }
-            })
-            .catch(error => {
-                console.error('Error al cargar perfil:', error);
-                mensajeError.textContent = 'Error al cargar el perfil.';
-                mensajeError.classList.remove('oculto');
-            });
-    }
-
     function cargarMascotas(idcentro) {
-        fetch(`http://localhost:3000/refugios/mascotas/${idcentro}`, { credentials: 'include' })
+        fetch(`${BASE_URL}/refugios/mascotas/${idcentro}`, { credentials: 'include' })
             .then(res => res.json())
             .then(data => {
                 const contenedorGatos = document.getElementById('mascotasRegistradas');
@@ -67,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelectorAll('.boton-solicitudes').forEach(button => {
                         button.addEventListener('click', () => {
                             const mascotaId = button.getAttribute('data-mascota-id');
-                            window.location.href = `/refugiosSolicitudes.html?mascotaId=${mascotaId}&idcentro=${idcentro}`;
+                            window.location.href = `${BASE_URL}/refugiosSolicitudes.html?mascotaId=${mascotaId}&idcentro=${idcentro}`;
                         });
                     });
                 } else {
@@ -81,12 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function cargarSolicitudes() {
-        fetch(`http://localhost:3000/solicitudes/solicitudes?tipo=refugio&idcentro=${idcentro}`, {
+        fetch(`${BASE_URL}/solicitudes/solicitudes?tipo=refugio&idcentro=${idcentro}`, {
             credentials: 'include'
         })
             .then(res => res.json())
             .then(data => {
-                console.log('Solicitudes obtenidas:', data); 
+                console.log('Solicitudes obtenidas:', data);
                 resultadosSolicitudes.innerHTML = '';
 
                 if (data.success && data.solicitudes.length > 0) {
@@ -117,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const select = button.previousElementSibling;
                             const nuevoEstado = select.value;
 
-                            fetch(`http://localhost:3000/solicitudes/solicitudes/${solicitudId}/estado`, {
+                            fetch(`${BASE_URL}/solicitudes/solicitudes/${solicitudId}/estado`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ estado: nuevoEstado }),
@@ -151,14 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('cerrar-sesion').addEventListener('click', () => {
-        fetch('http://localhost:3000/refugios/logout', {
+        fetch(`${BASE_URL}/refugios/logout`, {
             method: 'POST',
             credentials: 'include'
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = '/usuarios/login';
+                    window.location.href = `${BASE_URL}/usuarios/login`;
                 } else {
                     mensajeError.textContent = data.message || 'Error al cerrar sesión';
                     mensajeError.classList.remove('oculto');
