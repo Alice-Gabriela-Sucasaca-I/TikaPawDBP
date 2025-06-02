@@ -1,238 +1,11 @@
-/*
-const express = require('express');
-const router = express.Router();
-const db = require('../config/database');
-const path = require('path');
-
-// mostrar formulario para registro
-router.get('/registerrefugio', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'registerrefugio.html'));
-});
-
-// procesar registro de refugios
-router.post('/registerrefugio', (req, res) => {
-    const { nombreencargado, nombrecentro, telefono, correo, redesociales, contrasena } = req.body;
-    const adopcion = true;
-
-    const sql = 'INSERT INTO centrosdeadopcion (nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena, redesociales) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena || '123', redesociales], (err, result) => {
-        if (err) {
-            console.error('error al registrar refugio:', err);
-            res.json({ success: false, message: 'error al registrar refugio' });
-            return;
-        }
-        const newId = result.insertId; // ID generado por MySQL
-        res.json({ success: true, message: 'refugio registrado exitosamente', idcentro: newId });
-    });
-});
-
-// mostrar lista de refugios
-router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'refugios.html'));
-});
-
-// obtener refugios
-router.get('/refugios', (req, res) => {
-    const sql = 'SELECT * FROM centrosdeadopcion';
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error('error al obtener refugios:', err);
-            res.json({ success: false, message: 'error al obtener refugios' });
-            return;
-        }
-        res.json({ success: true, refugios: results });
-    });
-});
-
-// obtener mascotas por refugio
-router.get('/mascotas/:idcentro', (req, res) => {
-    const idcentro = req.params.idcentro;
-    const sql = 'SELECT * FROM mascota WHERE idcentro = ?';
-    db.query(sql, [idcentro], (err, results) => {
-        if (err) {
-            console.error('error al obtener mascotas del refugio:', err);
-            res.json({ success: false, message: 'error al obtener mascotas' });
-            return;
-        }
-        res.json({ success: true, mascotas: results });
-    });
-});
-
-// mostrar refugio especifico
-router.get('/refugio', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'refugio.html'));
-});
-
-module.exports = router;
-*/
-/*
-const express = require('express');
-const router = express.Router();
-const path = require('path');
-//const multer = require('multer');
-const db = require('../config/database');
-
-// Mostrar formulario para registrar refugio
-router.get('/registerrefugio', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'registerrefugio.html'));
-});
-
-// Procesar registro de refugios
-router.post('/registerrefugio', (req, res) => {
-    const { nombreencargado, nombrecentro, telefono, correo, redesociales, contrasena } = req.body;
-    const adopcion = true;
-
-    // SQL para insertar refugio en la base de datos
-    const sql = 'INSERT INTO centrosdeadopcion (nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena, redesociales) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena || '123', redesociales], (err, result) => {
-        if (err) {
-            console.error('Error al registrar refugio:', err);
-            return res.json({ success: false, message: 'Error al registrar refugio' });
-        }
-        const newId = result.insertId; // ID generado por MySQL
-        res.json({ success: true, message: 'Refugio registrado exitosamente', idcentro: newId });
-    });
-});
-
-// Mostrar lista de refugios
-router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'refugios.html'));
-});
-
-// Obtener todos los refugios
-router.get('/refugios', (req, res) => {
-    const sql = 'SELECT * FROM centrosdeadopcion';
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error al obtener refugios:', err);
-            return res.json({ success: false, message: 'Error al obtener refugios' });
-        }
-        res.json({ success: true, refugios: results });
-    });
-});
-
-router.get('/refugio', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views/refugio.html'));
-});
-
-
-// Obtener mascotas por refugio
-router.get('/mascotas/:idcentro', (req, res) => {
-    const idcentro = req.params.idcentro;
-    const sql = 'SELECT * FROM mascota WHERE idcentro = ?';
-    db.query(sql, [idcentro], (err, results) => {
-        if (err) {
-            console.error('Error al obtener mascotas del refugio:', err);
-            return res.json({ success: false, message: 'Error al obtener mascotas' });
-        }
-        res.json({ success: true, mascotas: results });
-    });
-});
-
-// Login para refugios
-router.post('/login', (req, res) => {
-    const { correo, password } = req.body;
-
-    // Buscar en tabla de refugios
-    const sqlRefugio = 'SELECT idcentro, nombrecentro FROM centrosdeadopcion WHERE correo = ? AND contrasena = ?';
-    db.query(sqlRefugio, [correo, password], (err, resultsRefugio) => {
-        if (err) {
-            console.error('Error al iniciar sesión (refugio):', err);
-            return res.json({ success: false, message: 'Error del servidor' });
-        }
-
-        if (resultsRefugio.length > 0) {
-            const refugio = resultsRefugio[0];
-            req.session.userId = refugio.idcentro;
-            req.session.tipo = 'refugio';
-            return res.json({ success: true, tipo: 'refugio' });  // Esto ya está bien
-        }
-
-        return res.json({ success: false, message: 'Correo o contraseña incorrectos' });
-    });
-});
-
-// Ruta para ver el perfil de refugio, redirige si no está autenticado
-router.get('/perfil/refugio', (req, res) => {
-    if (!req.session.userId || req.session.tipo !== 'refugio') {
-        return res.redirect('/usuarios/login'); // Redirige si no está autenticado
-    }
-    res.sendFile(path.join(__dirname, '../views', 'perfilRefugio.html')); // Enviar la vista del perfil
-});
-
-// Obtener el perfil del refugio a través de una API (JSON)
-router.get('/api/perfil', (req, res) => {
-    if (!req.session.userId || req.session.tipo !== 'refugio') {
-        return res.json({ success: false, message: 'Debe iniciar sesión como refugio' });
-    }
-
-    const sql = 'SELECT * FROM centrosdeadopcion WHERE idcentro = ?';
-    db.query(sql, [req.session.userId], (err, results) => {
-        if (err) {
-            console.error('Error al obtener perfil de refugio:', err);
-            return res.json({ success: false, message: 'Error al obtener perfil' });
-        }
-        if (results.length > 0) {
-            res.json({ success: true, refugio: results[0] });
-        } else {
-            res.json({ success: false, message: 'No se encontró el refugio' });
-        }
-    });
-});
-
-router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.json({ success: false, message: 'Error al cerrar sesión' });
-        }
-        res.clearCookie('connect.sid'); // Limpiar la cookie de sesión
-        res.json({ success: true, message: 'Sesión cerrada exitosamente' }); // Respuesta al frontend
-    });
-});
-
-
-// Ruta para registrar mascotas (debe estar protegida)
-router.post('/mascotas/register', (req, res) => {
-    // Verificar sesión de refugio
-    if (!req.session.userId || req.session.tipo !== 'refugio') {
-        return res.status(401).json({ success: false, message: 'No autorizado' });
-    }
-
-    const { nombre, tamanio, especie, edad, genero, descripcion } = req.body;
-    const idcentro = req.session.userId; // Usar el ID del refugio de la sesión
-
-    const sql = 'INSERT INTO mascota (idcentro, nombre, tamanio, especie, edad, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [idcentro, nombre, tamanio, especie, edad, genero, descripcion], (err, result) => {
-        if (err) {
-            console.error('Error al registrar mascota:', err);
-            return res.json({ success: false, message: 'Error al registrar mascota' });
-        }
-        res.json({ success: true, message: 'Mascota registrada exitosamente' });
-    });
-});
-
-router.get('/mascotas/:idcentro', (req, res) => {
-    const idcentro = req.params.idcentro;
-    const sql = 'SELECT * FROM mascota WHERE idcentro = ?';
-    
-    db.query(sql, [idcentro], (err, results) => {
-        if (err) {
-            console.error('Error al obtener mascotas:', err);
-            return res.json({ success: false, message: 'Error al obtener mascotas' });
-        }
-        res.json({ success: true, mascotas: results });
-    });
-});
-
-module.exports = router;
-*/
 const express = require('express');
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
-const db = require('../config/database');
+//const db = require('../config/database');
+const { db } = require('../config/database');
 
-//cargado de imagenes , se guarda en ./uploads
+const bcrypt = require('bcrypt'); 
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'public/uploads/'),
@@ -240,34 +13,37 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Mostrar formulario para registrar refugio
 router.get('/registerrefugio', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'registerrefugio.html'));
 });
 
-// Procesar registro de refugios
-router.post('/registerrefugio', (req, res) => {
+router.post('/registerrefugio', async (req, res) => {
     const { nombreencargado, nombrecentro, telefono, correo, redesociales, contrasena } = req.body;
     const adopcion = true;
 
-    // SQL para insertar refugio en la base de datos
-    const sql = 'INSERT INTO centrosdeadopcion (nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena, redesociales) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena || '123', redesociales], (err, result) => {
-        if (err) {
-            console.error('Error al registrar refugio:', err);
-            return res.json({ success: false, message: 'Error al registrar refugio' });
-        }
-        const newId = result.insertId; // ID generado por MySQL
-        res.json({ success: true, message: 'Refugio registrado exitosamente', idcentro: newId });
-    });
+    try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(contrasena || '123', saltRounds);
+
+        const sql = 'INSERT INTO centrosdeadopcion (nombrecentro, adopcion, nombreencargado, telefono, correo, contrasena, redesociales) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        db.query(sql, [nombrecentro, adopcion, nombreencargado, telefono, correo, hashedPassword, redesociales], (err, result) => {
+            if (err) {
+                console.error('Error al registrar refugio:', err);
+                return res.json({ success: false, message: 'Error al registrar refugio' });
+            }
+            const newId = result.insertId;
+            res.json({ success: true, message: 'Refugio registrado exitosamente', idcentro: newId });
+        });
+    } catch (error) {
+        console.error('Error al encriptar contraseña:', error);
+        res.json({ success: false, message: 'Error al procesar el registro' });
+    }
 });
 
-// Mostrar lista de refugios
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'refugios.html'));
 });
 
-// Obtener todos los refugios
 router.get('/refugios', (req, res) => {
     const sql = 'SELECT * FROM centrosdeadopcion';
     db.query(sql, (err, results) => {
@@ -280,11 +56,9 @@ router.get('/refugios', (req, res) => {
 });
 
 router.get('/refugio', (req, res) => {
-  res.sendFile(path.join(__dirname, '../views/refugio.html'));
+    res.sendFile(path.join(__dirname, '../views/refugio.html'));
 });
 
-
-// Obtener mascotas por refugio
 router.get('/mascotas/:idcentro', (req, res) => {
     const idcentro = req.params.idcentro;
     const sql = 'SELECT * FROM mascota WHERE idcentro = ?';
@@ -297,13 +71,11 @@ router.get('/mascotas/:idcentro', (req, res) => {
     });
 });
 
-// Login para refugios
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { correo, password } = req.body;
 
-    // Buscar en tabla de refugios
-    const sqlRefugio = 'SELECT idcentro, nombrecentro FROM centrosdeadopcion WHERE correo = ? AND contrasena = ?';
-    db.query(sqlRefugio, [correo, password], (err, resultsRefugio) => {
+    const sqlRefugio = 'SELECT idcentro, nombrecentro, contrasena FROM centrosdeadopcion WHERE correo = ?';
+    db.query(sqlRefugio, [correo], async (err, resultsRefugio) => {
         if (err) {
             console.error('Error al iniciar sesión (refugio):', err);
             return res.json({ success: false, message: 'Error del servidor' });
@@ -311,24 +83,25 @@ router.post('/login', (req, res) => {
 
         if (resultsRefugio.length > 0) {
             const refugio = resultsRefugio[0];
-            req.session.userId = refugio.idcentro;
-            req.session.tipo = 'refugio';
-            return res.json({ success: true, tipo: 'refugio' });  // Esto ya está bien
+            const match = await bcrypt.compare(password, refugio.contrasena);
+            if (match) {
+                req.session.userId = refugio.idcentro;
+                req.session.tipo = 'refugio';
+                return res.json({ success: true, tipo: 'refugio' });
+            }
         }
 
         return res.json({ success: false, message: 'Correo o contraseña incorrectos' });
     });
 });
 
-// Ruta para ver el perfil de refugio, redirige si no estaa autenticado
 router.get('/perfil/refugio', (req, res) => {
     if (!req.session.userId || req.session.tipo !== 'refugio') {
-        return res.redirect('/usuarios/login'); 
+        return res.redirect('/usuarios/login');
     }
-    res.sendFile(path.join(__dirname, '../views', 'perfilRefugio.html')); 
+    res.sendFile(path.join(__dirname, '../views', 'perfilRefugio.html'));
 });
 
-// Obtener el perfil del refugio a través de una API (JSON)
 router.get('/api/perfil', (req, res) => {
     if (!req.session.userId || req.session.tipo !== 'refugio') {
         return res.json({ success: false, message: 'Debe iniciar sesión como refugio' });
@@ -353,15 +126,15 @@ router.post('/logout', (req, res) => {
         if (err) {
             return res.json({ success: false, message: 'Error al cerrar sesión' });
         }
-        res.clearCookie('connect.sid'); // Limpiar la cookie de sesionn
-        res.json({ success: true, message: 'Sesión cerrada exitosamente' }); 
+        res.clearCookie('connect.sid');
+        res.json({ success: true, message: 'Sesión cerrada exitosamente' });
     });
 });
 
-
 router.post('/mascotas/register', upload.single('foto'), (req, res) => {
     const { nombre, tamanio, especie, edad, genero, descripcion, idcentro } = req.body;
-    const foto = req.file ? req.file.filename : null;
+    const foto = req.file ? `/uploads/${req.file.filename}` : null;
+
     console.log('Body:', req.body);
     console.log('File:', req.file);
 
@@ -369,14 +142,13 @@ router.post('/mascotas/register', upload.single('foto'), (req, res) => {
         return res.status(400).json({ success: false, message: 'Faltan campos requeridos' });
     }
 
-    // SQL sin promesas, con callback
     const sql = 'INSERT INTO mascota (nombre, tamanio, especie, edad, genero, descripcion, idcentro, foto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     db.query(sql, [nombre, tamanio, especie, edad, genero, descripcion, idcentro, foto], (err, result) => {
         if (err) {
             console.error('Error al registrar mascota:', err);
             return res.status(500).json({ success: false, message: 'Error interno del servidor' });
         }
-        res.json({ success: true });
+        res.json({ success: true, message: 'Mascota registrada con éxito' });
     });
 });
 
@@ -399,7 +171,7 @@ router.get('/mascotas', (req, res) => {
 
 router.get('/registermascota', (req, res) => {
     if (!req.session.userId || req.session.tipo !== 'refugio') {
-        return res.redirect('/usuarios/login'); // redirige si no estaa logueado
+        return res.redirect('/usuarios/login');
     }
     res.sendFile(path.join(__dirname, '../views/registermascota.html'));
 });
@@ -412,5 +184,115 @@ router.get('/api/auth/check', (req, res) => {
     }
 });
 
+router.get('/refugioseSolicitudes.html', (req, res) => {
+    if (!req.session.userId || req.session.tipo !== 'refugio') {
+        return res.redirect('/usuarios/login');
+    }
+    res.sendFile(path.join(__dirname, '../views', 'refugiosesolicitudes.html'));
+});
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+router.get('/rdf', (req, res) => {
+    const baseURL = `${req.protocol}://${req.get('host')}`;
+    const view = req.query.view;
+    const refugioSQL = 'SELECT * FROM centrosdeadopcion';
+
+    db.query(refugioSQL, (err, refugios) => {
+        if (err) {
+            console.error('Error al obtener refugios:', err);
+            return res.status(500).send('Error interno');
+        }
+
+        let rdf = `<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:tiki="${baseURL}/rdf#">`;
+
+        for (let r of refugios) {
+            const url = `${baseURL}/refugio/${r.idcentro}`;
+            const nombre = r.nombrecentro.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const direccion = (r.direccion || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const correo = (r.correo || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const telefono = (r.telefono || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            rdf += `
+    <rdf:Description rdf:about="${url}">
+        <tiki:nombre>${nombre}</tiki:nombre>
+        <tiki:direccion>${direccion}</tiki:direccion>
+        <tiki:correo>${correo}</tiki:correo>
+        <tiki:telefono>${telefono}</tiki:telefono>
+    </rdf:Description>`;
+        }
+
+        rdf += '\n</rdf:RDF>';
+
+        if (view === 'html') {
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>RDF de Refugios - TikaPaw</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        pre { background: #f4f4f4; padding: 10px; border: 1px solid #ccc; }
+                    </style>
+                </head>
+                <body>
+                    <h1>RDF de Refugios</h1>
+                    <pre>${rdf.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                    <a href="/refugios/rdf">Descargar RDF</a> | <a href="/refugios/rdf?view=graph">Ver grafo</a>
+                </body>
+                </html>
+            `);
+        } else if (view === 'graph') {
+            res.sendFile(path.join(__dirname, '../views', 'refugios-rdf-viewer.html'));
+        } else {
+            res.type('application/rdf+xml');
+            res.send(rdf);
+        }
+    });
+});
+///
+router.get('/registerrefugio/rdf', (req, res) => {
+    const baseURL = `${req.protocol}://${req.get('host')}`;
+    const view = req.query.view;
+
+    const rdf = `<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:tiki="${baseURL}/rdf#">
+    <rdf:Description rdf:about="${baseURL}/refugios/registerrefugio">
+        <tiki:descripcion>Registra un nuevo centro de adopción.</tiki:descripcion>
+        <tiki:yaTengoCuenta rdf:resource="${baseURL}/usuarios/login"/>
+    </rdf:Description>
+</rdf:RDF>`;
+
+    if (view === 'html') {
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>RDF de Registro de Refugio - TikaPaw</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    pre { background: #f4f4f4; padding: 10px; border: 1px solid #ccc; }
+                </style>
+            </head>
+            <body>
+                <h1>RDF de Registro de Refugio</h1>
+                <pre>${rdf.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                <a href="/refugios/registerrefugio/rdf">Descargar RDF</a> | <a href="/refugios/registerrefugio/rdf?view=graph">Ver grafo</a>
+            </body>
+            </html>
+        `);
+    } else if (view === 'graph') {
+        res.sendFile(path.join(__dirname, '../views', 'registerrefugio-rdf-viewer.html'));
+    } else {
+        res.type('application/rdf+xml');
+        res.send(rdf);
+    }
+});
+///
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports = router;

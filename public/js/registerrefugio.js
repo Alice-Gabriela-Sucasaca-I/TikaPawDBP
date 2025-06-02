@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function handleSubmit(event) {
     event.preventDefault(); 
 
-    // Capturar los datos del formulario
     const formData = new FormData(event.target);
     const data = {
         rubro: formData.get('rubro'),
@@ -22,7 +21,6 @@ function handleSubmit(event) {
         infoadicional: formData.get('infoadicional')
     };
 
-    // Enviar los datos al servidor
     fetch('/refugios/registerrefugio', {
         method: 'POST',
         headers: {
@@ -33,10 +31,9 @@ function handleSubmit(event) {
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            // Mostrar mensaje de exito
             const exito = document.getElementById('exito');
             exito.style.display = 'block';
-            // Limpiar el formulario
+
             event.target.reset();
             
             setTimeout(() => {

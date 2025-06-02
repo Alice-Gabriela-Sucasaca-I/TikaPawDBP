@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('busqueda.js cargado correctamente');
 
-    // Contenedor de resultados para el header
     const resultadosHeaderDiv = document.createElement('div');
     resultadosHeaderDiv.id = 'resultados';
     const seccionHeroica = document.querySelector('.seccion-heroica');
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('No se encontró .seccion-heroica');
     }
 
-    // Contenedor de resultados sec informativa
     const resultadosInformativaDiv = document.getElementById('resultados-informativa');
     if (resultadosInformativaDiv) {
         console.log('Contenedor de resultados para la sección informativa encontrado');
@@ -20,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('No se encontró #resultados-informativa');
     }
 
-    //  buscar refugios desde el header aa
     window.buscarRefugio = async () => {
         console.log('Función buscarRefugio (header) ejecutada');
         const termino = document.getElementById('buscar-refugio').value.trim();
@@ -46,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Función para buscar mascotas desde el header
     window.buscarMascota = async () => {
         console.log('Función buscarMascota (header) ejecutada');
         const termino = document.getElementById('buscar-mascota').value.trim();
@@ -71,8 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resultadosHeaderDiv.innerHTML = '<p>Hubo un problema al buscar mascotas.</p>';
         }
     };
-
-    // Funcion para buscar refugios desde sec info
     window.buscarRefugioInformativa = async () => {
         console.log('Función buscarRefugioInformativa ejecutada');
         const termino = document.getElementById('buscar-refugio-informativa').value.trim();
@@ -100,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Funcion para buscar mascotas desde la sec info
     window.buscarMascotaInformativa = async () => {
         console.log('Función buscarMascotaInformativa ejecutada');
         const termino = document.getElementById('buscar-mascota-informativa').value.trim();
@@ -128,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Funcionn para mostrar resultados
     function mostrarResultados(datos, tipo, contenedor) {
         console.log('Mostrando resultados en contenedor:', contenedor ? contenedor.id : 'Contenedor no definido');
         if (!contenedor) {

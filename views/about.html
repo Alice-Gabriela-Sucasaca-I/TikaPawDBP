@@ -23,17 +23,26 @@
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
     </nav>
-    <div class="iconos">
-      <a href="/usuarios/login" title="Registrar usuario">
-        <i class="fa-regular fa-user"></i>
+  <div class="iconos">
+    <a href="/usuarios/login" title="Iniciar sesión">
+      <i class="fa-regular fa-user"></i>
+    </a>
+
+
+    <div style="position: relative; display: inline-block;">
+      <a href="#" id="toggle" title="Opciones" style="font-size: 20px; color: black; cursor: pointer;">
+        <i class="fa-solid fa-file-arrow-down"></i>
       </a>
-      <a href="/busqueda" title="Buscar">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </a>
-      <a href="/favoritos" title="Favoritos">
-        <i class="fa-regular fa-heart"></i>
-      </a>
+
+      <div id="menu" style="display: none; position: absolute; background: white; border: 1px solid black; z-index: 10; right: 0; top: 30px;">
+       <div>
+        <a href="/rdf?view=html">Ver RDF</a> |
+        <a href="/rdf?view=graph">Descargar RDF</a>
+      </div>
+      <a href="/grafos.html" style="display: block; padding: 8px 12px; color: black; text-decoration: none;">Ver Grafo</a>
+      </div>
     </div>
+  </div>
   </header>
   <section class="about-hero">
     <h2 class="titulo-refugio">🐾 Conoce TikaPaw 🐾</h2>
@@ -70,3 +79,5 @@
   </footer>
 </body>
 </html>
+
+<script src="/js/BotonToggle.js"></script>

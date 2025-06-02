@@ -1,38 +1,18 @@
-/*
-
-const mysql = require('mysql2');
-
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'aliceg', 
-    database: 'dbtikapaw' 
-});
-
-db.connect((err) => {
-    if (err) {
-        console.error('error conectando a la base de datos:', err);
-        return;
-    }
-    console.log('conectado a la base de datos mysql');
-});
-
-module.exports = db;
-*/
 require('dotenv').config();
 
 const mysql = require('mysql2');
+const { Sequelize } = require('sequelize');
 
-const db = mysql.createConnection({
+const dbConnection = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'aliceg',
     database: process.env.DB_DATABASE || 'dbtikapaw',
-    //port: process.env.DB_PORT || 3306
-    port: process.env.DB_PORT || 32803
+    //port: process.env.DB_PORT || 3306 // local
+    port: process.env.DB_PORT || 32803 // render
 });
 
-db.connect((err) => {
+dbConnection.connect((err) => {
     if (err) {
         console.error('Error conectando a la base de datos:', err.code, err.message);
         return;
@@ -40,4 +20,30 @@ db.connect((err) => {
     console.log('Conectado a la base de datos MySQL');
 });
 
-module.exports = db;
+const db = {
+    query: (sql, params, callback) => {
+        return dbConnection.query(sql, params, callback);
+    }
+};
+
+const sequelize = new Sequelize(
+    process.env.DB_DATABASE || 'dbtikapaw',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASSWORD || 'aliceg',
+    {
+        host: process.env.DB_HOST || 'localhost',
+        //port: process.env.DB_PORT || 3306, // local
+        port: process.env.DB_PORT || 32803, //render
+        dialect: 'mysql',
+        logging: false
+    }
+);
+
+sequelize.authenticate()
+    .then(() => console.log('Conexión a la base de datos con Sequelize establecida correctamente'))
+    .catch(err => console.error('Error al conectar con Sequelize:', err));
+
+module.exports = {
+    db, 
+    sequelize 
+};

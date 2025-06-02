@@ -1,4 +1,3 @@
-// register.js
 document.addEventListener('DOMContentLoaded', () => {
     const formulario = document.querySelector('form');
     if (formulario) {

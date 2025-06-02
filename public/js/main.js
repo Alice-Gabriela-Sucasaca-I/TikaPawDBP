@@ -82,6 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('refugio-nombre').textContent = refugio.nombrecentro;
                             document.getElementById('refugio-telefono').textContent = refugio.telefono;
                             document.getElementById('refugio-encargado').textContent = refugio.nombreencargado;
+          //rdf idcentro
+                            const rdfViewerLink = document.getElementById('rdf-viewer-link');
+                            const rdfDownloadLink = document.getElementById('rdf-download-link');
+                            const graphLink = document.getElementById('graph-link');
+                            if (rdfViewerLink && rdfDownloadLink && graphLink) {
+                                rdfViewerLink.href = `/mascotas/mascotas-rdf?view=html&idcentro=${idcentro}`;
+                                rdfDownloadLink.href = `/mascotas/mascotas-rdf?idcentro=${idcentro}`;
+                                graphLink.href = `/mascotas/mascotas-rdf?view=graph&idcentro=${idcentro}`;
+                            }
                         }
                     }
                 })
@@ -103,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <img src="/img/cat.jpeg" alt="${mascota.nombre}">
                                     <h3>${mascota.nombre}</h3>
                                     <p>${mascota.edad} años • ${mascota.descripcion}</p>
-                                    <button class="boton-adoptar">adoptame</button>
-                                `;
+                                    <a href="/mascota.html?mascotaId=${mascota.idmascota}" class="boton-adoptar">Adóptame</a>
+                                    `;
                                 contenedorGatos.appendChild(tarjeta);
                             });
                         }

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikaPaw</title>
+    <title>TikaPaw - Perfil de Usuario</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="/js/perfilUsuario.js" defer></script> 
 </head>
 <body>
     <header>
@@ -16,70 +17,65 @@
                 TikaPaw
             </a>
         </div>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/refugios">Refugios</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-        </nav>
-        <div class="iconos">
-            <a href="/usuarios/login" title="Iniciar sesión">
-                <i class="fa-regular fa-user"></i>
-            </a>
-            <a href="/busqueda" title="Buscar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </a>
-            <a href="/favoritos" title="Favoritos">
-                <i class="fa-regular fa-heart"></i>
-            </a>
-        </div>
-    </header>
-</head>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/refugios">Refugios</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  <div class="iconos">
+    <a href="/usuarios/login" title="Iniciar sesión">
+      <i class="fa-regular fa-user"></i>
+    </a>
 
-<body>
-    <h1>Perfil de Usuario</h1>
-    <div id="perfil">
-        <p><strong>Nombre:</strong> <span id="nombre"></span></p>
-        <p><strong>Edad:</strong> <span id="edad"></span></p>
-        <p><strong>Correo:</strong> <span id="correo"></span></p>
-        <p><strong>Teléfono:</strong> <span id="telefono"></span></p>
+
+    <div style="position: relative; display: inline-block;">
+      <a href="#" id="toggle" title="Opciones" style="font-size: 20px; color: black; cursor: pointer;">
+        <i class="fa-solid fa-file-arrow-down"></i>
+      </a>
+
+      <div id="menu" style="display: none; position: absolute; background: white; border: 1px solid black; z-index: 10; right: 0; top: 30px;">
+       <div>
+        <a href="/rdf?view=html">Ver RDF</a> |
+        <a href="/rdf?view=graph">Descargar RDF</a>
+      </div>
+      <a href="/grafos.html" style="display: block; padding: 8px 12px; color: black; text-decoration: none;">Ver Grafo</a>
+      </div>
     </div>
-    <button id="logout">Cerrar sesión</button>
+  </div>
+    </header>
 
-    <script>
-        async function cargarPerfil() {
-            try {
-                const response = await fetch('/usuarios/perfil/usuario/datos', {
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('nombre').textContent = data.data.nombre;
-                    document.getElementById('edad').textContent = data.data.edad;
-                    document.getElementById('correo').textContent = data.data.correo;
-                    document.getElementById('telefono').textContent = data.data.telefono;
-                } else {
-                    alert('Error al obtener datos del perfil');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+    <section class="seccion-heroica">
+        <div class="derecha-heroica">
+            <div class="breadcrumb">🏠 <span>Perfil</span></div>
+            <h1 class="titulo-refugio">Tu Perfil en TikaPaw</h1>
+            <p class="texto-heroico">Explora y gestiona tu información personal con amor por las patitas.</p>
+        </div>
+    </section>
 
-        document.getElementById('logout').addEventListener('click', async () => {
-            const response = await fetch('/usuarios/logout', {
-                method: 'POST',
-                credentials: 'include'
-            });
-            const data = await response.json();
-            if (data.success) {
-                window.location.href = '/usuarios/login';
-            } else {
-                alert('Error al cerrar sesión');
-            }
-        });
+    <section class="seccion-informativa">
+        <div class="bloque">
+            <h2><i class="fa-solid fa-user"></i> Datos Personales</h2>
+            <div id="perfil">
+                <p><strong>Nombre:</strong> <span id="nombre">Cargando...</span></p>
+                <p><strong>Edad:</strong> <span id="edad">Cargando...</span></p>
+                <p><strong>Correo:</strong> <span id="correo">Cargando...</span></p>
+                <p><strong>Teléfono:</strong> <span id="telefono">Cargando...</span></p>
+            </div>
+            <button id="logout" class="boton-heroico">Cerrar sesión</button>
+        </div>
+    </section>
 
-        document.addEventListener('DOMContentLoaded', cargarPerfil);
-    </script>
+    <section class="seccion-solicitudes">
+        <h2><i class="fa-solid fa-paw"></i> Solicitudes de Adopción</h2>
+        <p id="mensaje-error" class="mensaje-error oculto"></p>
+        <div id="resultados-solicitudes" class="contenedor-gatos"></div>
+    </section>
+    
+    <footer>
+        © 2025 TikaPaw - Todos los derechos reservados
+    </footer>
 </body>
 </html>
+
+<script src="/js/BotonToggle.js"></script>

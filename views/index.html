@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+
 <header>
   <div class="logo-marca">
     <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
@@ -34,9 +35,20 @@
       <input type="text" id="buscar-mascota" placeholder="Adopta una mascota..." class="busqueda-input">
       <i class="fa-solid fa-magnifying-glass" onclick="buscarMascota()"></i>
     </div>
-    <a href="/favoritos" title="Favoritos">
-      <i class="fa-regular fa-heart"></i>
-    </a>
+
+    <div style="position: relative; display: inline-block;">
+      <a href="#" id="toggle" title="Opciones" style="font-size: 20px; color: black; cursor: pointer;">
+        <i class="fa-solid fa-file-arrow-down"></i>
+      </a>
+
+      <div id="menu" style="display: none; position: absolute; background: white; border: 1px solid black; z-index: 10; right: 0; top: 30px;">
+       <div>
+        <a href="/rdf?view=html">Ver RDF</a> |
+        <a href="/rdf?view=graph">Descargar RDF</a>
+      </div>
+      <a href="/grafos.html" style="display: block; padding: 8px 12px; color: black; text-decoration: none;">grafos</a>
+      </div>
+    </div>
   </div>
 </header>
     <section class="seccion-heroica">
@@ -94,30 +106,9 @@
         </div>
     </section>
     <section class="galeria-gatos">
-        <h2>Gatitos en adopción</h2>
-        <div class="contenedor-gatos">
-            <div class="tarjeta-gato">
-                <img src="/img/cat.jpeg" alt="Gato 1">
-                <h3>Michi</h3>
-                <p>2 años • Juguetón y cariñoso</p>
-                <button class="boton-adoptar">Adóptame</button>
-            </div>
-            <div class="tarjeta-gato">
-                <img src="/img/cat.jpeg" alt="Gato 2">
-                <h3>Luna</h3>
-                <p>1 año • Tranquila y dulce</p>
-                <button class="boton-adoptar">Adóptame</button>
-            </div>
-            <div class="tarjeta-gato">
-                <img src="/img/cat.jpeg" alt="Gato 3">
-                <h3>Tigre</h3>
-                <p>3 años • Independiente</p>
-                <button class="boton-adoptar">Adóptame</button>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="boton-adoptar" onclick="window.location.href='/refugios'">Ver más gatos</button>
-        </div>
+            <h2>Gatitos en adopción</h2>
+            <div id="contenedor-gatos" class="contenedor-gatos"></div>
+            <a href="/refugios" class="boton-ver-mas">Ver más gatos</a>
     </section>
     <footer>
         <div class="footer-links">
@@ -129,6 +120,46 @@
         © 2025 TikaPaw - Todos los derechos reservados
     </footer>
     <script src="/js/main.js" defer></script>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarMascotas();
+    });
+
+async function cargarMascotas() {
+  try {
+    const response = await fetch('/mascotas-public');
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    console.log('Mascotas recibidas:', data); // 👈 revisa esto en la consola
+
+    const contenedorGatos = document.getElementById('contenedor-gatos');
+    contenedorGatos.innerHTML = '';
+
+    if (data.success && data.mascotas.length > 0) {
+      data.mascotas.slice(0, 3).forEach(mascota => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'tarjeta-gato';
+        tarjeta.innerHTML = `
+          <img src="${mascota.foto || '/img/cat.jpeg'}" alt="${mascota.nombre}">
+          <h3>${mascota.nombre}</h3>
+          <p>${mascota.edad} años • ${mascota.descripcion || 'Sin descripción'}</p>
+          <a href="/mascota.html?mascotaId=${mascota.idmascota}" class="boton-adoptar">Adóptame</a>
+        `;
+        contenedorGatos.appendChild(tarjeta);
+      });
+    } else {
+      contenedorGatos.innerHTML = '<p>No hay mascotas disponibles.</p>';
+    }
+  } catch (error) {
+    console.error('Error al cargar mascotas:', error);
+    document.getElementById('contenedor-gatos').innerHTML = `<p>Error: ${error.message}</p>`;
+  }
+}
+
+</script>
 </body>
 </html>
 <script src="/js/busqueda.js" defer></script>
+<script src="/js/BotonToggle.js"></script>

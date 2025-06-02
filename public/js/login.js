@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { isValid, tipo } = await verificarSesion();
     const currentPath = window.location.pathname;
 
-    // Redirección  si ya hay sesión activa
     if (isValid) {
         sessionStorage.setItem('tipoUsuario', tipo);
 

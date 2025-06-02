@@ -120,7 +120,6 @@
       <a href="/usuarios/login" title="Iniciar sesión">
         <i class="fa-regular fa-user"></i>
       </a>
-          <!-- Buscador como en index -->
       <div class="buscador">
         <input type="text" id="buscar-refugio" placeholder="Busca un refugio, albergue..." class="busqueda-input">
         <i class="fa-solid fa-magnifying-glass" onclick="buscarRefugio()"></i>
@@ -128,11 +127,21 @@
       <div class="buscador">
         <input type="text" id="buscar-mascota" placeholder="Adopta una mascota..." class="busqueda-input">
         <i class="fa-solid fa-magnifying-glass" onclick="buscarMascota()"></i>
-      </div>
-       <a href="/favoritos" title="Favoritos">
-        <i class="fa-regular fa-heart"></i>
+    
+    <div style="position: relative; display: inline-block;">
+      <a href="#" id="toggle" title="Opciones" style="font-size: 20px; color: black; cursor: pointer;">
+        <i class="fa-solid fa-file-arrow-down"></i>
       </a>
+
+      <div id="menu" style="display: none; position: absolute; background: white; border: 1px solid black; z-index: 10; right: 0; top: 30px;">
+       <div>
+        <a href="/refugios/rdf?view=html">Ver RDF</a> |
+        <a href="/refugios/rdf">Descargar RDF</a>
+      </div>
+      <a href="/refugios/rdf?view=graph" style="display: block; padding: 8px 12px; color: black; text-decoration: none;">grafos</a>
+      </div>
     </div>
+  </div>
   </header>
 <section class="seccion-heroica">
 </section>
@@ -178,7 +187,6 @@
     </div>
   </section>
 
-  <!-- Contenedor donde busqueda.js puede insertar los resultados -->
   <div id="resultados"></div>
 
   <footer>
@@ -187,5 +195,6 @@
 
   <script src="/js/main.js" defer></script>
   <script src="/js/busqueda.js" defer></script>
+<script src="/js/BotonToggle.js"></script>
 </body>
 </html>
