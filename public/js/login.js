@@ -97,21 +97,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 */
 
+const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // 🔍 Verifica inicioo de sesion
+    // Verifica inicio de sesión
     async function verificarSesion() {
         try {
-            // 1roo intenta verificar sesion de usuario
-            let response = await fetch('/usuarios/api/auth/check', { credentials: 'include' });
-            let { isValid, tipo } = await response.json();
-
-            if (isValid) return { isValid, tipo };
-
-            // Si no es usuario, intenta con refugio
-            response = await fetch('/refugios/api/auth/check', { credentials: 'include' });
-            return await response.json();
-        } 
-        catch (error) {
+            const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const data = await response.json();
+            console.log('Verificación de sesión:', data);
+            return data;
+        } catch (error) {
             console.error('Error al verificar sesión:', error);
             return { isValid: false };
         }
@@ -122,22 +121,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (isValid) {
         sessionStorage.setItem('tipoUsuario', tipo);
-
         if (tipo === 'usuario' && !currentPath.startsWith('/usuarios/perfil')) {
-            window.location.replace('/usuarios/perfil/usuario');
-        } 
-        else if (tipo === 'refugio' && !currentPath.startsWith('/refugios/perfil')) {
-            window.location.replace('/refugios/perfil/refugio');
+            window.location.replace(`${BASE_URL}/usuarios/perfil/usuario`);
+        } else if (tipo === 'refugio' && !currentPath.startsWith('/refugios/perfil')) {
+            window.location.replace(`${BASE_URL}/refugios/perfil/refugio`);
         }
-    } 
-    else {
+    } else {
         sessionStorage.removeItem('tipoUsuario');
         if (!currentPath.includes('/usuarios/login')) {
-            window.location.replace('/usuarios/login');
+            window.location.replace(`${BASE_URL}/usuarios/login`);
         }
     }
 
-    //  formulario de login
+    // Manejo del formulario de login
     const formulario = document.querySelector('form');
     if (formulario) {
         formulario.addEventListener('submit', async (e) => {
@@ -147,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/usuarios/login', {
+                const response = await fetch(`${BASE_URL}/usuarios/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo, password }),
@@ -155,23 +151,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 const datos = await response.json();
+                console.log('Respuesta de login:', datos);
 
                 if (datos.success) {
                     sessionStorage.setItem('tipoUsuario', datos.tipo);
-
-                    // Redirigir según el tipo de usuario
                     window.location.replace(
                         datos.tipo === 'usuario'
-                            ? '/usuarios/perfil/usuario'
-                            : '/refugios/perfil/refugio'
+                            ? `${BASE_URL}/usuarios/perfil/usuario`
+                            : `${BASE_URL}/refugios/perfil/refugio`
                     );
-                }
-                 else {
+                } else {
                     alert('Error: ' + datos.message);
                 }
-            } 
-            catch (error) {
-                console.error('Error:', error);
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
                 alert('Hubo un problema con el inicio de sesión');
             }
         });
