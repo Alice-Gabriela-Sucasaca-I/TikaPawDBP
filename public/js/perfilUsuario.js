@@ -1,20 +1,15 @@
+const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
+
 document.addEventListener('DOMContentLoaded', async () => {
     let usuarioId;
 
     try {
-        /*
-        const response = await fetch('http://localhost:3000/usuarios/api/auth/check', {
+        const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
             method: 'GET',
             credentials: 'include'
         });
-        */
-      
-    const response = await fetch('https://tikapawdbp.onrender.com/usuarios/api/auth/check', {
-    method: 'GET',
-    credentials: 'include'
-});
         const data = await response.json();
-        console.log('Respuesta de autenticación completa:', data); 
+        console.log('Respuesta de autenticación completa:', data);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -22,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (data.isValid && data.tipo === 'usuario') {
             usuarioId = data.userId;
-            const userData = data.data || data.user || data; 
+            const userData = data.data || data.user || data;
             document.getElementById('nombre').textContent = userData.username || userData.nombre || 'Usuario';
             document.getElementById('edad').textContent = userData.edad || 'No especificada';
             document.getElementById('correo').textContent = userData.correo || 'No especificado';
@@ -40,19 +35,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const mensajeError = document.getElementById('mensaje-error');
             mensajeError.textContent = 'Sesión no válida o tipo de usuario incorrecto';
             mensajeError.classList.remove('oculto');
-            window.location.href = '/usuarios/login';
+            window.location.href = `${BASE_URL}/usuarios/login`;
         }
     } catch (error) {
         console.error('Error al verificar autenticación:', error);
         const mensajeError = document.getElementById('mensaje-error');
         mensajeError.textContent = `Error al verificar autenticación: ${error.message}`;
         mensajeError.classList.remove('oculto');
-        window.location.href = '/usuarios/login';
+        window.location.href = `${BASE_URL}/usuarios/login`;
     }
 
     async function cargarSolicitudes() {
         try {
-            const response = await fetch(`http://localhost:3000/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}`, {
+            const response = await fetch(`${BASE_URL}/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}`, {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -74,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p><strong>Mascota:</strong> ${solicitud.mascota_nombre || 'Desconocida'}</p>
                         <p><strong>Fecha:</strong> ${new Date(solicitud.fecha).toLocaleDateString('es-ES')}</p>
                         <p><strong>Estado:</strong> <span class="estado-${solicitud.estado}">${solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}</span></p>
-                        <a href="/mascota.html?mascotaId=${solicitud.idmascota}" class="boton-heroico">Ver Mascota</a>
+                        <a href="${BASE_URL}/mascota.html?mascotaId=${solicitud.idmascota}" class="boton-heroico">Ver Mascota</a>
                     `;
                     resultadosSolicitudes.appendChild(tarjeta);
                 });
@@ -91,13 +86,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('logout').addEventListener('click', async () => {
         try {
-            const response = await fetch('http://localhost:3000/usuarios/logout', {
+            const response = await fetch(`${BASE_URL}/usuarios/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });
             const data = await response.json();
             if (data.success) {
-                window.location.href = '/usuarios/login';
+                window.location.href = `${BASE_URL}/usuarios/login`;
             } else {
                 const mensajeError = document.getElementById('mensaje-error');
                 mensajeError.textContent = 'Error al cerrar sesión';
