@@ -2,10 +2,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     let usuarioId;
 
     try {
+        /*
         const response = await fetch('http://localhost:3000/usuarios/api/auth/check', {
             method: 'GET',
             credentials: 'include'
         });
+        */
+      
+    const response = await fetch('https://tikapawdbp.onrender.com/usuarios/api/auth/check', {
+    method: 'GET',
+    credentials: 'include'
+});
         const data = await response.json();
         console.log('Respuesta de autenticación completa:', data); 
 
