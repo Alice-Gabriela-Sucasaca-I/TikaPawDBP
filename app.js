@@ -47,7 +47,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const db = require('./config/database'); // Asegúrate que ./config/database exporta { sequelize }
+const db = require('./config/database'); 
 
 const indexRoutes = require('./routes/index');
 const usuariosRoutes = require('./routes/usuarios');
@@ -58,9 +58,8 @@ const solicitudesRoutes = require('./routes/solicitudes');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS configurado para frontend hospedado (ajusta si tu dominio cambia)
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'https://tikapawdbp.onrender.com', // Ajusta este valor si el frontend cambia
+    origin: process.env.FRONTEND_URL || 'https://tikapawdbp.onrender.com', 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -86,12 +85,11 @@ app.use(cookieParser());
 
 // Configurar sesión
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'mi-secreto', // Asegúrate de usar variables de entorno
-    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'mi-secreto', 
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Esto asegura que se usen cookies seguras en producción
+        secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
         sameSite: 'None', // Asegura que la cookie funcione en sitios cruzados
         maxAge: 24 * 60 * 60 * 1000, // 24 horas
@@ -111,7 +109,7 @@ app.use('/solicitudes', solicitudesRoutes);
     try {
         await sequelize.authenticate();
         console.log('Conexión a la base de datos verificada');
-        await sessionStore.sync(); // Asegura que la tabla 'sessions' exista
+        await sessionStore.sync(); 
         console.log('Tabla de sesiones sincronizada');
 
         app.listen(port, () => {
