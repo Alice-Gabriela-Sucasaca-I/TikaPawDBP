@@ -60,7 +60,7 @@ const port = process.env.PORT || 3000;
 
 // CORS configurado para frontend hospedado (ajusta si tu dominio cambia)
 app.use(cors({
-    origin: 'https://tikapawdbp.onrender.com', // O 'http://localhost:5173' en desarrollo
+    origin: process.env.FRONTEND_URL || 'https://tikapawdbp.onrender.com', // Ajusta este valor si el frontend cambia
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -80,18 +80,20 @@ const sessionStore = new SequelizeStore({
     checkExpirationInterval: 15 * 60 * 1000, // Cada 15 minutos limpia sesiones vencidas
     expiration: 24 * 60 * 60 * 1000           // Sesiones expiran en 24h
 });
+
+// Configurar cookieParser
 app.use(cookieParser());
+
+// Configurar sesión
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'mi-secreto', // Mejor usar variables de entorno
+    secret: process.env.SESSION_SECRET || 'mi-secreto', // Asegúrate de usar variables de entorno
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        //secure: process.env.NODE_ENV === 'production', // Solo true en HTTPS
-        secure: true,
+        secure: process.env.NODE_ENV === 'production', // Esto asegura que se usen cookies seguras en producción
         httpOnly: true,
-        sameSite: 'None',
-        //sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        sameSite: 'None', // Asegura que la cookie funcione en sitios cruzados
         maxAge: 24 * 60 * 60 * 1000, // 24 horas
         path: '/'
     }
@@ -104,7 +106,7 @@ app.use('/refugios', refugiosRoutes);
 app.use('/mascotas', mascotasRoutes);
 app.use('/solicitudes', solicitudesRoutes);
 
-// Inicio del servidor
+// Iniciar servidor
 (async () => {
     try {
         await sequelize.authenticate();
