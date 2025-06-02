@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultadosSolicitudes = document.getElementById('resultados-solicitudes');
     let idcentro;
 
-    fetch('http://localhost:3000/usuarios/api/auth/check', { credentials: 'include' })
-        .then(res => res.json())
+    //fetch('http://localhost:3000/usuarios/api/auth/check', { credentials: 'include' })
+    fetch('https://tikapawdbp.onrender.com/usuarios/api/auth/check', { credentials: 'include' })  
+    .then(res => res.json())
         .then(data => {
             if (!data.isValid || data.tipo !== 'refugio') {
                 window.location.href = '/usuarios/login';
