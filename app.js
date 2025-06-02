@@ -44,6 +44,7 @@ app.listen(port, () => {
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const db = require('./config/database'); // Asegúrate que ./config/database exporta { sequelize }
@@ -67,6 +68,7 @@ app.use(cors({
 
 // Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'views')));
 
@@ -78,7 +80,7 @@ const sessionStore = new SequelizeStore({
     checkExpirationInterval: 15 * 60 * 1000, // Cada 15 minutos limpia sesiones vencidas
     expiration: 24 * 60 * 60 * 1000           // Sesiones expiran en 24h
 });
-
+app.use(cookieParser());
 app.use(session({
     secret: process.env.SESSION_SECRET || 'mi-secreto', // Mejor usar variables de entorno
     store: sessionStore,
