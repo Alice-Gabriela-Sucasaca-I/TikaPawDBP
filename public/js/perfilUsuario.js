@@ -1,29 +1,25 @@
+// perfilUsuario.js
 const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', async () => {
     let usuarioId;
 
-    // Función para mostrar mensajes de error
     const mostrarError = (mensaje) => {
         const mensajeError = document.getElementById('mensaje-error');
         mensajeError.textContent = mensaje;
-        mensajeError.classList.remove lilypad
-removeClass('oculto');
+        mensajeError.classList.remove('oculto');
+        console.error(mensaje);
     };
 
     try {
-        // Verificar autenticación
         const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
             method: 'GET',
             credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
+            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
         });
 
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
+            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -31,67 +27,38 @@ removeClass('oculto');
 
         if (data.isValid && data.tipo === 'usuario') {
             usuarioId = data.userId;
-            // Cargar datos del usuario
-            await cargarDatosUsuario();
+            // Usar directamente los datos devueltos por /api/auth/check
+            document.getElementById('nombre').textContent = data.username || 'Usuario';
+            document.getElementById('edad').textContent = data.edad || 'No especificada';
+            document.getElementById('correo').textContent = data.correo || 'No especificado';
+            document.getElementById('telefono').textContent = data.telefono || 'No especificado';
+            console.log('Datos del usuario asignados:', {
+                nombre: document.getElementById('nombre').textContent,
+                edad: document.getElementById('edad').textContent,
+                correo: document.getElementById('correo').textContent,
+                telefono: document.getElementById('telefono').textContent
+            });
+
             await cargarSolicitudes();
         } else {
             mostrarError('Sesión no válida o tipo de usuario incorrecto');
-            setTimeout(() => {
-                window.location.href = `${BASE_URL}/usuarios/login`;
-            }, 2000);
+            setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
         }
     } catch (error) {
         console.error('Error al verificar autenticación:', error);
         mostrarError(`Error al verificar autenticación: ${error.message}`);
-        setTimeout(() => {
-            window.location.href = `${BASE_URL}/usuarios/login`;
-        }, 2000);
-    }
-
-    async function cargarDatosUsuario() {
-        try {
-            const response = await fetch(`${BASE_URL}/usuarios/perfil/usuario/datos`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-
-            const userData = await response.json();
-            if (userData.success) {
-                document.getElementById('nombre').textContent = userData.data.nombre || 'Usuario';
-                document.getElementById('edad').textContent = userData.data.edad || 'No especificada';
-                document.getElementById('correo').textContent = userData.data.correo || 'No especificado';
-                document.getElementById('telefono').textContent = userData.data.telefono || 'No especificado';
-                console.log('Datos del usuario asignados:', userData.data);
-            } else {
-                mostrarError('No se pudieron cargar los datos del usuario');
-            }
-        } catch (error) {
-            console.error('Error al cargar datos del usuario:', error);
-            mostrarError(`Error al cargar datos: ${error.message}`);
-        }
+        setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
     }
 
     async function cargarSolicitudes() {
         try {
             const response = await fetch(`${BASE_URL}/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}`, {
-                method: 'GET',
                 credentials: 'include',
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
+                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
             });
 
             if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -123,23 +90,21 @@ removeClass('oculto');
 
     document.getElementById('logout').addEventListener('click', async () => {
         try {
+            console.log('Intentando cerrar sesión...');
             const response = await fetch(`${BASE_URL}/usuarios/logout`, {
                 method: 'POST',
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
+                headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
             });
 
             const data = await response.json();
+            console.log('Respuesta de logout:', data);
+
             if (data.success) {
-                // Limpiar cualquier almacenamiento local
-                sessionStorage.clear();
-                // Forzar redirección
+                sessionStorage.clear(); // Limpiar almacenamiento local
                 window.location.href = `${BASE_URL}/usuarios/login`;
             } else {
-                mostrarError('Error al cerrar sesión: ' + (data.message || 'Inténtalo de nuevo'));
+                mostrarError('Error al cerrar sesión: ' + (data.message || 'Intenta de nuevo'));
             }
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
