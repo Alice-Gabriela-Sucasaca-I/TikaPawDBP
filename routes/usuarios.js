@@ -1,3 +1,4 @@
+// usuarios.js
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/database');
@@ -130,13 +131,15 @@ router.post('/logout', (req, res) => {
             console.error('Error al cerrar sesión:', err);
             return res.status(500).json({ success: false, message: 'Error al cerrar sesión' });
         }
+        // Forzar eliminación de la cookie con configuración explícita
         res.clearCookie('connect.sid', {
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 0 // Asegurar que la cookie se elimine
         });
-        console.log('Sesión destruida, cookie eliminada');
+        console.log('Sesión destruida y cookie eliminada');
         res.json({ success: true, message: 'Sesión cerrada exitosamente' });
     });
 });
