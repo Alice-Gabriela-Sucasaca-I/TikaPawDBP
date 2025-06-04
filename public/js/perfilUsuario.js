@@ -3,61 +3,100 @@ const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onr
 document.addEventListener('DOMContentLoaded', async () => {
     let usuarioId;
 
+    // Función para mostrar mensajes de error
+    const mostrarError = (mensaje) => {
+        const mensajeError = document.getElementById('mensaje-error');
+        mensajeError.textContent = mensaje;
+        mensajeError.classList.remove lilypad
+removeClass('oculto');
+    };
+
     try {
+        // Verificar autenticación
         const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            }
         });
-        const data = await response.json();
-        console.log('Respuesta de autenticación completa:', data);
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`Error HTTP: ${response.status}`);
         }
+
+        const data = await response.json();
+        console.log('Respuesta de autenticación:', data);
 
         if (data.isValid && data.tipo === 'usuario') {
             usuarioId = data.userId;
-            const userData = data.data || data.user || data;
-            document.getElementById('nombre').textContent = userData.username || userData.nombre || 'Usuario';
-            document.getElementById('edad').textContent = userData.edad || 'No especificada';
-            document.getElementById('correo').textContent = userData.correo || 'No especificado';
-            document.getElementById('telefono').textContent = userData.telefono || 'No especificado';
-
-            console.log('Datos del usuario asignados:', {
-                nombre: document.getElementById('nombre').textContent,
-                edad: document.getElementById('edad').textContent,
-                correo: document.getElementById('correo').textContent,
-                telefono: document.getElementById('telefono').textContent
-            });
-
+            // Cargar datos del usuario
+            await cargarDatosUsuario();
             await cargarSolicitudes();
         } else {
-            const mensajeError = document.getElementById('mensaje-error');
-            mensajeError.textContent = 'Sesión no válida o tipo de usuario incorrecto';
-            mensajeError.classList.remove('oculto');
-            window.location.href = `${BASE_URL}/usuarios/login`;
+            mostrarError('Sesión no válida o tipo de usuario incorrecto');
+            setTimeout(() => {
+                window.location.href = `${BASE_URL}/usuarios/login`;
+            }, 2000);
         }
     } catch (error) {
         console.error('Error al verificar autenticación:', error);
-        const mensajeError = document.getElementById('mensaje-error');
-        mensajeError.textContent = `Error al verificar autenticación: ${error.message}`;
-        mensajeError.classList.remove('oculto');
-        window.location.href = `${BASE_URL}/usuarios/login`;
+        mostrarError(`Error al verificar autenticación: ${error.message}`);
+        setTimeout(() => {
+            window.location.href = `${BASE_URL}/usuarios/login`;
+        }, 2000);
+    }
+
+    async function cargarDatosUsuario() {
+        try {
+            const response = await fetch(`${BASE_URL}/usuarios/perfil/usuario/datos`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const userData = await response.json();
+            if (userData.success) {
+                document.getElementById('nombre').textContent = userData.data.nombre || 'Usuario';
+                document.getElementById('edad').textContent = userData.data.edad || 'No especificada';
+                document.getElementById('correo').textContent = userData.data.correo || 'No especificado';
+                document.getElementById('telefono').textContent = userData.data.telefono || 'No especificado';
+                console.log('Datos del usuario asignados:', userData.data);
+            } else {
+                mostrarError('No se pudieron cargar los datos del usuario');
+            }
+        } catch (error) {
+            console.error('Error al cargar datos del usuario:', error);
+            mostrarError(`Error al cargar datos: ${error.message}`);
+        }
     }
 
     async function cargarSolicitudes() {
         try {
             const response = await fetch(`${BASE_URL}/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}`, {
-                credentials: 'include'
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
             });
-            const data = await response.json();
-            const resultadosSolicitudes = document.getElementById('resultados-solicitudes');
-            const mensajeError = document.getElementById('mensaje-error');
-            resultadosSolicitudes.innerHTML = '';
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(`Error HTTP: ${response.status}`);
             }
+
+            const data = await response.json();
+            const resultadosSolicitudes = document.getElementById('resultados-solicitudes');
+            resultadosSolicitudes.innerHTML = '';
 
             if (data.success && data.solicitudes && data.solicitudes.length > 0) {
                 data.solicitudes.forEach(solicitud => {
@@ -78,9 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (error) {
             console.error('Error al cargar solicitudes:', error);
-            const mensajeError = document.getElementById('mensaje-error');
-            mensajeError.textContent = `Error al cargar las solicitudes: ${error.message}`;
-            mensajeError.classList.remove('oculto');
+            mostrarError(`Error al cargar las solicitudes: ${error.message}`);
         }
     }
 
@@ -88,21 +125,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`${BASE_URL}/usuarios/logout`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
             });
+
             const data = await response.json();
             if (data.success) {
+                // Limpiar cualquier almacenamiento local
+                sessionStorage.clear();
+                // Forzar redirección
                 window.location.href = `${BASE_URL}/usuarios/login`;
             } else {
-                const mensajeError = document.getElementById('mensaje-error');
-                mensajeError.textContent = 'Error al cerrar sesión';
-                mensajeError.classList.remove('oculto');
+                mostrarError('Error al cerrar sesión: ' + (data.message || 'Inténtalo de nuevo'));
             }
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
-            const mensajeError = document.getElementById('mensaje-error');
-            mensajeError.textContent = 'Error al cerrar sesión';
-            mensajeError.classList.remove('oculto');
+            mostrarError('Error al cerrar sesión: ' + error.message);
         }
     });
 });
