@@ -48,6 +48,12 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const db = require('./config/database'); 
+// Rutas
+const indexRoutes = require('./routes/index');
+const usuariosRoutes = require('./routes/usuarios');
+const refugiosRoutes = require('./routes/refugios');
+const mascotasRoutes = require('./routes/mascotas');
+const solicitudesRoutes = require('./routes/solicitudes');
 
 const app = express();
 const port = process.env.PORT || 3000;
