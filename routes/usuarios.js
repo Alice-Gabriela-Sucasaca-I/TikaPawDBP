@@ -134,8 +134,9 @@ router.post('/logout', (req, res) => {
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none'
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
         });
+        console.log('Sesión destruida, cookie eliminada');
         res.json({ success: true, message: 'Sesión cerrada exitosamente' });
     });
 });
