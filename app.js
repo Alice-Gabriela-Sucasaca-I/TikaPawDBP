@@ -47,13 +47,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const db = require('./config/database'); 
-// Middleware para verificar sesión (añádelo antes de tus rutas)
-app.use((req, res, next) => {
-    console.log('Sesión actual:', req.session);
-    next();
-});
-// Rutas
+const db = require('./config/database');
+
+// Importación correcta de rutas
 const indexRoutes = require('./routes/index');
 const usuariosRoutes = require('./routes/usuarios');
 const refugiosRoutes = require('./routes/refugios');
@@ -62,52 +58,58 @@ const solicitudesRoutes = require('./routes/solicitudes');
 
 const app = express();
 const port = process.env.PORT || 3000;
-/*
+
+// Configuración CORS mejorada
 app.use(cors({
-    origin: process.env.FRONTEND_URL || ['https://tikapawdbp.onrender.com', 'http://localhost:3000'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-*/
-app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'https://tikapawdbp.onrender.com',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
+// Middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'views')));
 
+// Configuración de sesión persistente
 const sessionStore = new SequelizeStore({
     db: db.sequelize,
     tableName: 'sessions',
-    checkExpirationInterval: 15 * 60 * 1000, // Limpiar sesiones expiradas cada 15 min
-    expiration: 7 * 24 * 60 * 60 * 1000 
+    checkExpirationInterval: 15 * 60 * 1000,
+    expiration: 7 * 24 * 60 * 60 * 1000
 });
 
-// Configuración de sesión corregida
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || '91119adbb9f0f692a5838d138883bd53',
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    proxy: true, // Necesario para Render
+    proxy: true,
     cookie: {
-        secure: true, // Requiere HTTPS
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        sameSite: 'none', // Para cross-site
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-        // Elimina el dominio específico para evitar problemas
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
 }));
+
+// Sincronizar el store de sesiones
 sessionStore.sync();
 
-//rutas
+// Middleware para verificar sesión en cada request
+app.use((req, res, next) => {
+    console.log('Sesión actual:', {
+        userId: req.session.userId,
+        tipo: req.session.tipo,
+        cookie: req.session.cookie
+    });
+    next();
+});
+
+// Configuración de rutas
 app.use('/', indexRoutes);
 app.use('/usuarios', usuariosRoutes);
 app.use('/refugios', refugiosRoutes);
@@ -118,4 +120,3 @@ app.use('/solicitudes', solicitudesRoutes);
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
