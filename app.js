@@ -48,6 +48,11 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const db = require('./config/database'); 
+// Middleware para verificar sesión (añádelo antes de tus rutas)
+app.use((req, res, next) => {
+    console.log('Sesión actual:', req.session);
+    next();
+});
 // Rutas
 const indexRoutes = require('./routes/index');
 const usuariosRoutes = require('./routes/usuarios');
@@ -57,14 +62,20 @@ const solicitudesRoutes = require('./routes/solicitudes');
 
 const app = express();
 const port = process.env.PORT || 3000;
-
+/*
 app.use(cors({
     origin: process.env.FRONTEND_URL || ['https://tikapawdbp.onrender.com', 'http://localhost:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-
+*/
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -79,21 +90,21 @@ const sessionStore = new SequelizeStore({
     expiration: 7 * 24 * 60 * 60 * 1000 
 });
 
+// Configuración de sesión corregida
 app.use(session({
-    secret: process.env.SESSION_SECRET || '91119adbb9f0f692a5838d138883bd53', 
+    secret: process.env.SESSION_SECRET,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    proxy: true, // 
+    proxy: true, // Necesario para Render
     cookie: {
-        secure: process.env.NODE_ENV === 'production', 
+        secure: true, // Requiere HTTPS
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
-        domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined
+        sameSite: 'none', // Para cross-site
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+        // Elimina el dominio específico para evitar problemas
     }
 }));
-
 sessionStore.sync();
 
 //rutas
