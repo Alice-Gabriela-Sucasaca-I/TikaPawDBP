@@ -102,7 +102,7 @@ const BASE_URL = window.location.origin.includes('localhost')
   : 'https://tikapawdbp.onrender.com';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Verificar sesión al cargar
+    // Función mejorada para verificar sesión
     async function checkAuth() {
         try {
             const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
@@ -110,12 +110,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentials: 'include',
                 headers: {
                     'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
                 }
             });
             
-            if (!response.ok) throw new Error('Error en la verificación');
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             
             const data = await response.json();
+            console.log('Datos de sesión:', data);
             return data;
         } catch (error) {
             console.error('Error al verificar sesión:', error);
@@ -123,9 +129,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Manejar redirección según autenticación
+    // Manejo de redirección
     const authData = await checkAuth();
-    console.log('Datos de autenticación:', authData);
     
     if (authData.isValid) {
         if (authData.tipo === 'usuario' && !window.location.pathname.includes('/perfil/usuario')) {
@@ -157,9 +162,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 
                 const data = await response.json();
-                console.log('Respuesta de login:', data);
                 
                 if (data.success) {
+                    // Forzar recarga limpia de la página
                     window.location.href = data.tipo === 'usuario' 
                         ? `${BASE_URL}/usuarios/perfil/usuario` 
                         : `${BASE_URL}/refugios/perfil/refugio`;
