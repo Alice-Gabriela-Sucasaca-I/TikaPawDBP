@@ -94,15 +94,24 @@ router.post('/logout', (req, res) => {
         res.json({ success: true, message: 'Sesión cerrada exitosamente' });
     });
 });
-
+/*
 router.get('/api/auth/check', (req, res) => {
     console.log('Verificando sesión:', req.session);
     if (!req.session.userId || !req.session.tipo) {
         console.log('Sesión no válida:', req.session);
         return res.json({ isValid: false });
     }
+*/
+router.get('/api/auth/check', (req, res) => {
+    console.log('Verificación completa de sesión:', {
+        session: req.session,
+        cookies: req.headers.cookie,
+        headers: req.headers
+    });
 
-    if (req.session.tipo === 'usuario') {
+    if (req.session.userId && req.session.tipo) {
+        console.log('Sesión válida encontrada');
+         if (req.session.tipo === 'usuario') {
         const sql = 'SELECT idusuario, nombre, edad, correo, telefono FROM usuario WHERE idusuario = ?';
         db.query(sql, [req.session.userId], (err, results) => {
             if (err || results.length === 0) {
@@ -144,7 +153,59 @@ router.get('/api/auth/check', (req, res) => {
         res.json({ isValid: false });
     }
 });
-
+    } else {
+        console.log('Sesión inválida - Razón:', {
+            hasUserId: !!req.session.userId,
+            hasTipo: !!req.session.tipo,
+            sessionKeys: Object.keys(req.session)
+        });
+        return res.json({ isValid: false });
+    }
+});
+/*   
+if (req.session.tipo === 'usuario') {
+        const sql = 'SELECT idusuario, nombre, edad, correo, telefono FROM usuario WHERE idusuario = ?';
+        db.query(sql, [req.session.userId], (err, results) => {
+            if (err || results.length === 0) {
+                console.error('Error al verificar usuario:', err || 'Usuario no encontrado');
+                return res.json({ isValid: false });
+            }
+            const user = results[0];
+            res.json({
+                isValid: true,
+                tipo: req.session.tipo,
+                userId: user.idusuario,
+                username: user.nombre,
+                edad: user.edad,
+                correo: user.correo,
+                telefono: user.telefono
+            });
+        });
+    } else if (req.session.tipo === 'refugio') {
+        const sql = 'SELECT idcentro, nombrecentro, nombreencargado, correo, telefono, redesociales FROM centrosdeadopcion WHERE idcentro = ?';
+        db.query(sql, [req.session.userId], (err, results) => {
+            if (err || results.length === 0) {
+                console.error('Error al verificar refugio:', err || 'Refugio no encontrado');
+                return res.json({ isValid: false });
+            }
+            const refugio = results[0];
+            res.json({
+                isValid: true,
+                tipo: req.session.tipo,
+                userId: refugio.idcentro,
+                username: refugio.nombrecentro,
+                nombreencargado: refugio.nombreencargado,
+                correo: refugio.correo,
+                telefono: refugio.telefono,
+                redesociales: refugio.redesociales
+            });
+        });
+    } else {
+        console.log('Tipo de sesión desconocido:', req.session.tipo);
+        res.json({ isValid: false });
+    }
+});
+*/
 router.get('/perfil/usuario', (req, res) => {
     if (!req.session.userId || req.session.tipo !== 'usuario') {
         return res.redirect('/usuarios/login');
