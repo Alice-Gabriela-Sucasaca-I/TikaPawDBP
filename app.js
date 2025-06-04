@@ -41,6 +41,7 @@ app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
 */
+// app.js
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -66,6 +67,9 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Habilitar trust proxy para manejar cookies detrás de un proxy
+app.set('trust proxy', 1);
 
 // Middlewares básicos
 app.use(express.json());
