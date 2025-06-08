@@ -12,45 +12,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error(msg);
     };
 
- try {
-    const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
-    });
+    try {
+        // Verificar autenticación
+        const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+        });
 
-    if (!response.ok) throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
 
-    const data = await response.json();
-    console.log('Respuesta de autenticación:', data);
+        const data = await response.json();
+        console.log('Respuesta de autenticación:', data);
 
-    // Verifica si el tipo es refugio, si no lo es, detiene el flujo.
-    if (!data.isValid || data.tipo !== 'refugio') {
-        mostrarError('Sesión no válida o tipo de usuario incorrecto. Redirigiendo...');
-        setTimeout(() => {
-            window.location.href = `${BASE_URL}/usuarios/login`;
-        }, 2000);
-        return; // 👈 IMPORTANTE: Detiene ejecución
+        if (data.isValid && data.tipo === 'refugio') {
+            idcentro = data.userId;
+
+            document.getElementById('nombrecentro').textContent = data.username || 'Refugio';
+            document.getElementById('nombreencargado').textContent = data.nombreencargado || 'No especificado';
+            document.getElementById('correo').textContent = data.correo || 'No especificado';
+            document.getElementById('telefono').textContent = data.telefono || 'No especificado';
+            document.getElementById('redesociales').textContent = data.redesociales || 'No especificado';
+
+            await cargarMascotas(idcentro);
+            await cargarSolicitudes();
+        } else {
+            mostrarError('Sesión no válida o tipo incorrecto');
+            setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
+        }
+    } catch (error) {
+        mostrarError(`Error al verificar autenticación: ${error.message}`);
+        setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
     }
-
-    // Si sí es válido y es refugio, continua
-    idcentro = data.userId;
-
-    document.getElementById('nombrecentro').textContent = data.username || 'Refugio';
-    document.getElementById('nombreencargado').textContent = data.nombreencargado || 'No especificado';
-    document.getElementById('correo').textContent = data.correo || 'No especificado';
-    document.getElementById('telefono').textContent = data.telefono || 'No especificado';
-    document.getElementById('redesociales').textContent = data.redesociales || 'No especificado';
-
-    await cargarMascotas(idcentro);
-    await cargarSolicitudes();
-
-} catch (error) {
-    mostrarError(`Error al verificar autenticación: ${error.message}`);
-    setTimeout(() => {
-        window.location.href = `${BASE_URL}/usuarios/login`;
-    }, 2000);
-}
 
     async function cargarMascotas(idcentro) {
         try {
