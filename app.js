@@ -45,12 +45,11 @@ app.listen(port, () => {
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const db = require('./config/database');
+const cors = require('cors');
+const SequelizeStore = require('connect-session-sequelize')(session.Store); 
 
-// Importación correcta de rutas
+// Rutas
 const indexRoutes = require('./routes/index');
 const usuariosRoutes = require('./routes/usuarios');
 const refugiosRoutes = require('./routes/refugios');
@@ -58,62 +57,36 @@ const mascotasRoutes = require('./routes/mascotas');
 const solicitudesRoutes = require('./routes/solicitudes');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; 
 
-// Configuración CORS mejorada
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'https://tikapawdbp.onrender.com',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
 
-// Habilitar trust proxy para manejar cookies detrás de un proxy
-app.set('trust proxy', 1);
-
-// Middlewares básicos
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'views')));
-
-// Configuración de sesión persistente
+const sequelize = db.sequelize; 
 const sessionStore = new SequelizeStore({
-    db: db.sequelize,
-    tableName: 'sessions',
-    checkExpirationInterval: 15 * 60 * 1000,
-    expiration: 7 * 24 * 60 * 60 * 1000
+    db: sequelize,
+    tableName: 'sessions', 
 });
 
+app.use(cors());
+app.use(express.json());
+
 app.use(session({
-    secret: process.env.SESSION_SECRET || '91119adbb9f0f692a5838d138883bd53',
+    secret: process.env.SESSION_SECRET || 'mi-secreto', 
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    proxy: true,
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000 
     }
 }));
 
-// Sincronizar el store de sesiones
 sessionStore.sync();
 
-// Middleware para verificar sesión en cada request
-app.use((req, res, next) => {
-    console.log('Sesión actual:', {
-        userId: req.session.userId,
-        tipo: req.session.tipo,
-        cookie: req.session.cookie
-    });
-    next();
-});
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'views')));
 
-// Configuración de rutas
+// Rutas
 app.use('/', indexRoutes);
 app.use('/usuarios', usuariosRoutes);
 app.use('/refugios', refugiosRoutes);
@@ -124,3 +97,20 @@ app.use('/solicitudes', solicitudesRoutes);
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Conexión a la base de datos verificada');
+
+        const sessionStore = new SequelizeStore({
+            db: sequelize, 
+            tableName: 'sessions',
+        });
+
+        await sessionStore.sync();
+
+    } catch (error) {
+        console.error('No se pudo conectar a la base de datos:', error);
+        process.exit(1);
+    }
+})();
