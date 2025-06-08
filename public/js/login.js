@@ -97,83 +97,82 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 */
 
-const BASE_URL = window.location.origin.includes('localhost') 
-  ? 'http://localhost:3000' 
-  : 'https://tikapawdbp.onrender.com';
-
 document.addEventListener('DOMContentLoaded', async () => {
-    // Función mejorada para verificar sesión
-    async function checkAuth() {
+    // 🔍 Verifica inicioo de sesion
+    async function verificarSesion() {
         try {
-            const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
-            
-            console.log('Response headers:', [...response.headers.entries()]);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Datos de sesión:', data);
-            return data;
-        } catch (error) {
+            // 1roo intenta verificar sesion de usuario
+            let response = await fetch('/usuarios/api/auth/check', { credentials: 'include' });
+            let { isValid, tipo } = await response.json();
+
+            if (isValid) return { isValid, tipo };
+
+            // Si no es usuario, intenta con refugio
+            response = await fetch('/refugios/api/auth/check', { credentials: 'include' });
+            return await response.json();
+        } 
+        catch (error) {
             console.error('Error al verificar sesión:', error);
             return { isValid: false };
         }
     }
 
-    // Manejo de redirección
-    const authData = await checkAuth();
-    
-    if (authData.isValid) {
-        if (authData.tipo === 'usuario' && !window.location.pathname.includes('/perfil/usuario')) {
-            window.location.href = `${BASE_URL}/usuarios/perfil/usuario`;
-        } else if (authData.tipo === 'refugio' && !window.location.pathname.includes('/perfil/refugio')) {
-            window.location.href = `${BASE_URL}/refugios/perfil/refugio`;
+    const { isValid, tipo } = await verificarSesion();
+    const currentPath = window.location.pathname;
+
+    if (isValid) {
+        sessionStorage.setItem('tipoUsuario', tipo);
+
+        if (tipo === 'usuario' && !currentPath.startsWith('/usuarios/perfil')) {
+            window.location.replace('/usuarios/perfil/usuario');
+        } 
+        else if (tipo === 'refugio' && !currentPath.startsWith('/refugios/perfil')) {
+            window.location.replace('/refugios/perfil/refugio');
         }
-    } else if (!window.location.pathname.includes('/login')) {
-        window.location.href = `${BASE_URL}/usuarios/login`;
+    } 
+    else {
+        sessionStorage.removeItem('tipoUsuario');
+        if (!currentPath.includes('/usuarios/login')) {
+            window.location.replace('/usuarios/login');
+        }
     }
 
-    // Manejo del formulario de login
+    //  formulario de login
     const formulario = document.querySelector('form');
     if (formulario) {
         formulario.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const correo = document.getElementById('correo').value;
             const password = document.getElementById('password').value;
-            
+
             try {
-                const response = await fetch(`${BASE_URL}/usuarios/login`, {
+                const response = await fetch('/usuarios/login', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo, password }),
                     credentials: 'include'
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Forzar recarga limpia de la página
-                    window.location.href = data.tipo === 'usuario' 
-                        ? `${BASE_URL}/usuarios/perfil/usuario` 
-                        : `${BASE_URL}/refugios/perfil/refugio`;
-                } else {
-                    alert(data.message || 'Error en el inicio de sesión');
+
+                const datos = await response.json();
+
+                if (datos.success) {
+                    sessionStorage.setItem('tipoUsuario', datos.tipo);
+
+                    // Redirigir según el tipo de usuario
+                    window.location.replace(
+                        datos.tipo === 'usuario'
+                            ? '/usuarios/perfil/usuario'
+                            : '/refugios/perfil/refugio'
+                    );
                 }
-            } catch (error) {
-                console.error('Error al iniciar sesión:', error);
-                alert('Error al conectar con el servidor');
+                 else {
+                    alert('Error: ' + datos.message);
+                }
+            } 
+            catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema con el inicio de sesión');
             }
         });
     }

@@ -40,13 +40,12 @@
     Responsive.css - Media Queries
 =================================== */
 
-/* Configuración base para el header */
 header {
     display: flex;
-    flex-direction: row; /* Siempre en línea */
+    flex-direction: row; 
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Por si no cabe en pantallas pequeñas */
+    flex-wrap: wrap; 
     padding: 20px;
     gap: 10px;
 }
@@ -99,7 +98,6 @@ nav {
     }
 }
 
-/* Tablet (hasta 768px) */
 @media (max-width: 768px) {
     nav {
         flex-wrap: wrap;
@@ -181,7 +179,6 @@ nav {
     }
 }
 
-/* Celular (hasta 600px) */
 @media (max-width: 600px) {
     .logo-marca img {
         width: 40px;
@@ -257,7 +254,6 @@ nav {
     }
 }
 
-/* Pantallas muy pequeñas (hasta 400px) */
 @media (max-width: 400px) {
     .titulo-refugio {
         font-size: 1.5em;
