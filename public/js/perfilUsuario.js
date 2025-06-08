@@ -1,5 +1,4 @@
-// perfilUsuario.js
-const BASE_URL = process.env.NODE_ENV === 'production' ? 'https://tikapawdbp.onrender.com' : 'http://localhost:3000';
+const BASE_URL = window.location.origin; 
 
 document.addEventListener('DOMContentLoaded', async () => {
     let usuarioId;
@@ -12,14 +11,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     try {
-        const response = await fetch(`${BASE_URL}/usuarios/api/auth/check`, {
+        const response = await fetch(${BASE_URL}/usuarios/api/auth/check, {
             method: 'GET',
             credentials: 'include',
             headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
         });
 
         if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+            throw new Error(Error HTTP: ${response.status} - ${response.statusText});
         }
 
         const data = await response.json();
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (data.isValid && data.tipo === 'usuario') {
             usuarioId = data.userId;
-            // Usar directamente los datos devueltos por /api/auth/check
             document.getElementById('nombre').textContent = data.username || 'Usuario';
             document.getElementById('edad').textContent = data.edad || 'No especificada';
             document.getElementById('correo').textContent = data.correo || 'No especificado';
@@ -42,23 +40,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             await cargarSolicitudes();
         } else {
             mostrarError('Sesión no válida o tipo de usuario incorrecto');
-            setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
+            setTimeout(() => window.location.href = ${BASE_URL}/usuarios/login, 2000);
         }
     } catch (error) {
         console.error('Error al verificar autenticación:', error);
-        mostrarError(`Error al verificar autenticación: ${error.message}`);
-        setTimeout(() => window.location.href = `${BASE_URL}/usuarios/login`, 2000);
+        mostrarError(Error al verificar autenticación: ${error.message});
+        setTimeout(() => window.location.href = ${BASE_URL}/usuarios/login, 2000);
     }
 
     async function cargarSolicitudes() {
         try {
-            const response = await fetch(`${BASE_URL}/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}`, {
+            const response = await fetch(${BASE_URL}/solicitudes/solicitudes?tipo=usuario&id=${usuarioId}, {
                 credentials: 'include',
                 headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
             });
 
             if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                throw new Error(Error HTTP: ${response.status} - ${response.statusText});
             }
 
             const data = await response.json();
@@ -84,14 +82,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (error) {
             console.error('Error al cargar solicitudes:', error);
-            mostrarError(`Error al cargar las solicitudes: ${error.message}`);
+            mostrarError(Error al cargar las solicitudes: ${error.message});
         }
     }
 
     document.getElementById('logout').addEventListener('click', async () => {
         try {
             console.log('Intentando cerrar sesión...');
-            const response = await fetch(`${BASE_URL}/usuarios/logout`, {
+            const response = await fetch(${BASE_URL}/usuarios/logout, {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
@@ -101,8 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('Respuesta de logout:', data);
 
             if (data.success) {
-                sessionStorage.clear(); // Limpiar almacenamiento local
-                window.location.href = `${BASE_URL}/usuarios/login`;
+                sessionStorage.clear();
+                window.location.href = ${BASE_URL}/usuarios/login;
             } else {
                 mostrarError('Error al cerrar sesión: ' + (data.message || 'Intenta de nuevo'));
             }
