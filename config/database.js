@@ -8,8 +8,8 @@ const dbConnection = mysql.createConnection({
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'aliceg',
     database: process.env.DB_DATABASE || 'dbtikapaw',
-    port: process.env.DB_PORT || 3306 // local
-    //port: process.env.DB_PORT || 32803 // render
+    //port: process.env.DB_PORT || 3306 // local
+    port: process.env.DB_PORT || 32803 // render
 });
 
 dbConnection.connect((err) => {
@@ -32,8 +32,8 @@ const sequelize = new Sequelize(
     process.env.DB_PASSWORD || 'aliceg',
     {
         host: process.env.DB_HOST || 'localhost',
-        port: process.env.DB_PORT || 3306, // local
-        //port: process.env.DB_PORT || 32803, //render
+        //port: process.env.DB_PORT || 3306, // local
+        port: process.env.DB_PORT || 32803, //render
         dialect: 'mysql',
         logging: false
     }
